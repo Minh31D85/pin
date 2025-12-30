@@ -11,6 +11,10 @@ const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full'
   },
+  {
+    path: 'pin-detail/:name',
+    loadChildren: () => import('./pin-detail/pin-detail.module').then( m => m.PinDetailPageModule)
+  },
 ];
 
 @NgModule({
