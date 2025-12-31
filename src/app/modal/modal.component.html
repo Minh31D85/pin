@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Bearbeiten</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item [class.edit-active]="isEditName">
+    <ion-label position="stacked">name</ion-label>
+    <ion-input [(ngModel)]="item.name" class="edit-btn" [readonly]="!isEditName"></ion-input>
+    
+    <ion-button slot="end" fill="clear" (click)="toggleEditName()">
+      <ion-icon 
+        slot="icon-only" 
+        size="large"
+        [color]="isEditName ? 'danger' : 'primary' " 
+        [name]="isEditName ? 'close-circle-outline' : 'add-circle-outline'">
+      </ion-icon>
+    </ion-button>
+  </ion-item>
+
+
+  <ion-item [class.edit-active]="isEditPin">
+    <ion-label position="stacked">PIN</ion-label>
+    <ion-input [(ngModel)]="item.pin" class="edit-btn" inputmode="numeric" [readonly]="!isEditPin"></ion-input>
+    <ion-button slot="end" fill="clear" (click)="toggleEditPin()">
+      <ion-icon 
+        slot="icon-only" 
+        size="large"
+        [color]="isEditPin ? 'danger' : 'primary'"
+        [name]="isEditPin ? 'close-circle-outline' : 'add-circle-outline'">
+      </ion-icon>
+    </ion-button>
+  </ion-item>
+
+  <ion-button expand="block" color="primary" class="ion-margin-top" (click)="save()">
+    Speichern
+  </ion-button>
+</ion-content>

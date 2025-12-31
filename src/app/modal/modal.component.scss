@@ -1,0 +1,10 @@
+ion-item.edit-active {
+  --background: #f2f2f2;
+  border-radius: 8px;
+}
+
+ion-item.edit-active ion-label {
+  color: var(--ion-color-primary);
+}
+
+

@@ -3,8 +3,34 @@
     <ion-title>
       PIN
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button id="home-menu-trigger">
+        <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+<ion-popover 
+  trigger="home-menu-trigger" 
+  side="bottom" 
+  alignment="end"
+  dismissOnSelect="true">
+  <ng-template>
+    <ion-list>
+      <ion-item button (click)="exportJSON()">
+        <ion-icon name="cloud-download-outline" slot="start"></ion-icon>
+        Export 
+      </ion-item>
+      <ion-item button (click)="importJSON()">
+        <ion-icon name="cloud-upload-outline" slot="start"></ion-icon>
+        Import 
+      </ion-item>
+    </ion-list>
+
+    
+  </ng-template>
+</ion-popover>
 
 <ion-content [fullscreen]="true">
   <ion-card>
@@ -35,13 +61,17 @@
     <ion-card-content>
       <ion-list>
         <ion-item *ngFor="let item of service.itemList; let i = index" 
-          button detail="true" (click)="navigateTo(item)">
+         (click)="navigateTo(item)">
           <ion-label>
             <h2>{{ item.name }}</h2>
           </ion-label> 
+            <ion-button slot="end" color="success" (click)="$event.stopPropagation(); edit(i)">
+              <ion-icon slot="icon-only" name="create-outline"></ion-icon>
+            </ion-button>
             <ion-button slot="end" color="danger" (click)="$event.stopPropagation(); delete(i)">
               <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
             </ion-button> 
+
         </ion-item>
       </ion-list>
     </ion-card-content>

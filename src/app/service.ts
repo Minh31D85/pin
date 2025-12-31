@@ -50,4 +50,23 @@ export class Service {
     this.itemList = [];
     await Preferences.remove({ key: this.PIN_KEY });
   }
+
+  async update(index: number, updated: PinItem): Promise<void>{
+    const item = this.itemList[index];
+    if (!item) return;
+
+    const newName = updated.name.trim();
+    const newPin = updated.pin.trim();
+
+    const nameChanged = item.name.trim().toLowerCase() !== newName.toLowerCase();
+
+    if (nameChanged){
+      const exists = this.itemList.some(
+      (other, i) => i !== index && other.name.trim().toLowerCase() === newName.toLowerCase()
+    );
+      if (exists) throw new Error('NAME_EXISTS');
+    }
+    this.itemList[index] = { name: newName, pin: newPin };
+    await this.save();
+  }
 }
