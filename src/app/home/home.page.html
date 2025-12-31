@@ -43,14 +43,29 @@
           (keydown.enter)="generate()">
         </ion-input>
       </ion-item>
+
       <ion-item>
         <ion-label position="floating">Pin</ion-label>
         <ion-input
-          type="password"
+          [type]="isPVisible ? 'text' : 'password'"
+          inputmode="numeric"
           [(ngModel)]="pin"
           (keydown.enter)="generate()">
+          <ion-button
+            fill="clear"
+            slot="end"
+            type="button"
+            (click)="togglePVisible()">
+            <ion-icon 
+              size="large"
+              slot="icon-only"
+              [name]="isPVisible ? 'eye-off-outline' : 'eye-outline'">
+            </ion-icon> 
+          </ion-button>
+          
         </ion-input>
       </ion-item>
+
       <ion-button expand="full" color="primary" (click)="generate()">
         hinzufügen
       </ion-button>

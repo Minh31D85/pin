@@ -13,6 +13,7 @@ import { ModalComponent } from '../modal/modal.component';
 export class HomePage {
   name: string = '';
   pin: string = '';
+  isPVisible: boolean = false;
 
   constructor(
     public service: Service,
@@ -20,26 +21,20 @@ export class HomePage {
     private modalCtrl: ModalController
   ) {}
 
-  async ngOnInit(){
-    await this.service.load();
-  }
+  async ngOnInit(){ await this.service.load(); }
+
+  togglePVisible(){ this.isPVisible = ! this.isPVisible; }
 
   async generate(){
     const n = this.name.trim();
     const p = this.pin.trim();
 
-    if (!n){
-      alert ('name is required');
-      return;
-    }
+    if (!n){ alert ('name is required'); return; }
 
-    if (!p){
-      alert('PIN is required');
-      return;
-    }
+    if (!p){ alert('PIN is required'); return; }
 
-    if (!/^\d{4}$/.test(p)){
-      alert('PIN must be numeric');
+    if (!/^\d{4,8}$/.test(p)){
+      alert('PIN must be exactly 4 digits to 8 digits');
       return;
     }
 
@@ -47,6 +42,7 @@ export class HomePage {
       await this.service.add({name: n, pin: p});
       this.name = '';
       this.pin = '';
+      this.isPVisible = false;
     } catch (e: any){
       if (e.message === 'NAME_EXISTS'){
         alert(`${n} already exists`);
