@@ -45,6 +45,8 @@ export class PinDetailPage implements OnInit {
     }
   }
 
+  maskPin(pin: string):string{ return '*'.repeat(pin.length) }
+
   private showPin(seconds: number) {
     this.clearTimers();
 

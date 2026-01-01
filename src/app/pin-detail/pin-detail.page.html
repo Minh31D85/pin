@@ -17,7 +17,7 @@
         </ng-container>
 
         <ng-template #hiddenPin>
-          ****
+          {{ maskPin(entry?.pin ?? '') }}
         </ng-template>
       </div>
 

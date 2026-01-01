@@ -34,7 +34,7 @@ export class ModalComponent {
     const p = this.item.pin.trim();
 
     if (!n){ alert('name is required'); return; }
-    if (!/^\d{4}$/.test(p)){ alert('PIN must be numeric'); return; }
+    if (!/^\d{4,8}$/.test(p)){ alert('PIN must be numeric'); return; }
 
     this.modalCtrl.dismiss(
       { index: this.index, updated: { name: n, pin: p } }, 'save'

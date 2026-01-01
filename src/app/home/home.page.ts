@@ -3,6 +3,7 @@ import { PinItem,Service } from '../service';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ModalComponent } from '../modal/modal.component';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,8 @@ export class HomePage {
   constructor(
     public service: Service,
     private router: Router,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
   ) {}
 
   async ngOnInit(){ await this.service.load(); }
@@ -56,7 +58,24 @@ export class HomePage {
 
 
   async delete(index: number){
-    await this.service.remove(index);
+    const alert = await this.alertCtrl.create({
+      header: 'Löschen',
+      message: `Wollen Sie den PIN löschen?`,
+      buttons:[
+        {
+          text: 'Löschen',
+          role: 'destructive',
+          handler: () =>{
+            this.service.remove(index);
+          }
+        },
+        {
+          text: 'Zurück',
+          role: 'cancel'
+        }
+      ]
+    })
+    await alert.present();
   }
 
 
