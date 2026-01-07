@@ -230,27 +230,27 @@ export class HomePage {
 
 
   async health() {
-  try {
-    const res = await this.backupApi.health();
+    try {
+      const res = await this.backupApi.health();
 
-    const alert = await this.alertCtrl.create({
-      header: 'Health OK',
-      message: JSON.stringify(res, null, 2),
-      buttons: [{ text: 'OK', role: 'cancel' }],
-    });
-    await alert.present();
-  } catch (e: any) {
-    const msg =
-      e?.error
-        ? (typeof e.error === 'string' ? e.error : JSON.stringify(e.error, null, 2))
-        : (e?.message ?? 'unbekannter Fehler');
+      const alert = await this.alertCtrl.create({
+        header: res.ok ? 'Health OK' : 'Health FEHLER',
+        message: `<pre>${JSON.stringify(res, null, 2)}</pre>`,
+        buttons: [{ text: 'OK', role: 'cancel' }],
+      });
+      await alert.present();
+    } catch (e: any) {
+      const msg =
+        e?.error
+          ? (typeof e.error === 'string' ? e.error : JSON.stringify(e.error, null, 2))
+          : (e?.message ?? 'unbekannter Fehler');
 
-    const alert = await this.alertCtrl.create({
-      header: 'Health FEHLER',
-      message: msg,
-      buttons: [{ text: 'OK', role: 'cancel' }],
-    });
-    await alert.present();
+      const alert = await this.alertCtrl.create({
+        header: 'Health FEHLER',
+        message: `<pre>${msg}</pre>`,
+        buttons: [{ text: 'OK', role: 'cancel' }],
+      });
+      await alert.present();
+    }
   }
-}
 }

@@ -1,21 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
-
   <!-- Nur für diese IP HTTP erlauben -->
   <domain-config cleartextTrafficPermitted="true">
-    <domain includeSubdomains="false">192.168.178.98</domain>
-    <domain includeSubdomains="false">backup.home</domain>
-
-    <trust-anchors>
-      <!-- Deine eigene CA (optional, nur für HTTPS relevant) -->
-      <certificates src="@raw/minh_home_ca" />
-      <!-- Android System CAs -->
-      <certificates src="system" />
-      <!-- User-added CAs (falls du CA manuell installiert hast) -->
-      <certificates src="user" />
-    </trust-anchors>
+    <domain includeSubdomains="false">192.168.178.101</domain>
   </domain-config>
-
 </network-security-config>
 
 

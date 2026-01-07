@@ -37,6 +37,7 @@ export class ApiService {
 
   constructor(private http: HttpClient){}
 
+  
   private headers(): HttpHeaders {
     return new HttpHeaders({
       'Accept': 'application/json',
@@ -47,8 +48,12 @@ export class ApiService {
 
 
   private url(path: string): string {
-    return `${this.baseUrl}${path}`;
+    const base = this.baseUrl.replace(/\/+$/, '');
+    const p = path.startsWith('/') ? path : `/${path}`;
+    return `${base}${p}`;
   }
+
+
 
   async list(app: string): Promise<string[]>{
     const res = await firstValueFrom(
@@ -59,13 +64,15 @@ export class ApiService {
     return res.files ?? [];
   }
 
-   async export<TPayload>(app: string, body: BackupExportReq<TPayload>): Promise<BackupExportRes> {
+
+  async export<TPayload>(app: string, body: BackupExportReq<TPayload>): Promise<BackupExportRes> {
     return await firstValueFrom(
       this.http.post<BackupExportRes>(this.url(`/backups/${encodeURIComponent(app)}/export`), body, {
         headers: this.headers(),
       })
     );
   }
+
 
   async latest(app: string): Promise<BackupLatestRes> {
     return await firstValueFrom(
@@ -75,6 +82,7 @@ export class ApiService {
     );
   }
 
+
   async import<TPayload>(app: string, path: string): Promise<BackupImportRes<TPayload>> {
     return await firstValueFrom(
       this.http.post<BackupImportRes<TPayload>>(this.url(`/backups/${encodeURIComponent(app)}/import`), { path }, {
@@ -83,12 +91,15 @@ export class ApiService {
     );
   }
 
-  async health(): Promise<any> {
-  return await firstValueFrom(
-    this.http.get(this.url('/health'), {
-      headers: new HttpHeaders({ 'Accept': 'application/json' }),
-    })
-  );
-}
 
+  async health(): Promise<{ ok: boolean; storage_writable?: boolean; time?: string; error?: string }> {
+    return await firstValueFrom(
+      this.http.get<{ ok: boolean; storage_writable?: boolean; time?: string; error?: string }>(
+        this.url('/_health'),
+        {
+         headers: new HttpHeaders({ Accept: 'application/json' }),
+        }
+      )
+    );
+  }
 }
