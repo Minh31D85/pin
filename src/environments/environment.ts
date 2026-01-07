@@ -3,7 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  backupApi:{
+    baseUrl: 'http://192.168.178.98:8080/api',
+    apiKey: '6>K?56KmfGw8f',
+    appName: 'pin',
+    schemaVersion: 1,
+  }
 };
 
 /*

@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ModalComponent } from '../modal/modal.component';
 import { AlertController } from '@ionic/angular';
+import { ApiService } from '../api-service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -21,6 +23,7 @@ export class HomePage {
     private router: Router,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
+    private backupApi: ApiService,
   ) {}
 
   async ngOnInit(){ await this.service.load(); }
@@ -95,6 +98,7 @@ export class HomePage {
 
     await modal.present();
 
+
     const { data , role } = await modal.onWillDismiss<{
       index: number;
       updated: PinItem;
@@ -118,12 +122,135 @@ export class HomePage {
   }
 
   async exportJSON(){
-// später: JSON erzeugen und speichern/teilen
-console.log('EXPORT JSON', this.service.itemList);
-alert('Export kommt als nächstes.');
+    try{
+      const app = environment.backupApi.appName;
+      const schemaVersion = environment.backupApi.schemaVersion;
+
+      const body = {
+        schemaVersion,
+        payload: {
+          items: this.service.itemList,
+        },
+        meta: {
+          device: 'android',
+          appVersion: '1.0',
+        },
+      };
+      const res =  await this.backupApi.export(app, body);
+      const alert = await this.alertCtrl.create({
+        header: 'Gespeichert',
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel'
+          }
+        ]
+      })
+      await alert.present();
+    }catch(e: any){
+      alert(`Export fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }
   }
 
   async importJSON(){
+    try{
+      const app = environment.backupApi.appName;
+      const latest = await this.backupApi.latest(app);
+      const payload = latest.backup?.payload;
+      const items = payload?.items;
 
+      if (!Array.isArray(items)){
+        alert('Backup ist ungültig: payload fehlt oder kein Array')
+        return;
+      }
+
+      this.service.itemList = items;
+      await this.service.save();
+      const alerts = await this.alertCtrl.create({
+        header: `Import erfolgreich :\n${latest.path}`,
+        buttons: [
+          {
+            text: 'Ok',
+            role: 'cancel'
+          }
+        ]
+      })
+      await alerts.present();
+
+
+    }catch(e: any){
+      alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }
   }
+
+  async listImport(){
+    try{
+      const app = environment.backupApi.appName;
+      const files = await this.backupApi.list(app);
+
+      if(!files.length){ alert('Kein Backup gefunden'); return }
+
+      const alerts = await this.alertCtrl.create({
+        header: 'Backup auswählen',
+        inputs: files.slice(0,10).map((path, idx) => ({
+          type: 'radio',
+          label: path,
+          value: path,
+          checked: idx === 0,
+        })),
+        buttons:[
+          {
+            text: 'Importieren',
+            handler: async (path: string) => {
+              const res = await this.backupApi.import<any>(app, path);
+              const items = res.payload?.items;
+
+              if(!Array.isArray(items)){ alert('Backup ist ungültig'); return};
+              this.service.itemList = items;
+              await this.service.save();
+
+              const alertDone = await this.alertCtrl.create({
+                header: `Import erfolgreich ${path}`,
+                buttons:[{text:'ok',role: 'cancel'}]
+              })
+              await alertDone.present();
+            }
+          },
+          {
+            text: 'Abbrechen',
+            role: 'cancel'
+          }
+        ]
+      })
+      await alerts.present();
+    }catch(e: any){
+      alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }
+  }
+
+
+  async health() {
+  try {
+    const res = await this.backupApi.health();
+
+    const alert = await this.alertCtrl.create({
+      header: 'Health OK',
+      message: JSON.stringify(res, null, 2),
+      buttons: [{ text: 'OK', role: 'cancel' }],
+    });
+    await alert.present();
+  } catch (e: any) {
+    const msg =
+      e?.error
+        ? (typeof e.error === 'string' ? e.error : JSON.stringify(e.error, null, 2))
+        : (e?.message ?? 'unbekannter Fehler');
+
+    const alert = await this.alertCtrl.create({
+      header: 'Health FEHLER',
+      message: msg,
+      buttons: [{ text: 'OK', role: 'cancel' }],
+    });
+    await alert.present();
+  }
+}
 }

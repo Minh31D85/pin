@@ -1,0 +1,8 @@
+{
+	"appId": "de.minh.starter",
+	"appName": "pin",
+	"webDir": "www",
+	"server": {
+		"androidScheme": "http"
+	}
+}
