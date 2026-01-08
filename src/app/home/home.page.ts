@@ -13,7 +13,11 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
+
 export class HomePage {
+  /**
+   * @description variables for new PIN generation
+   */
   name: string = '';
   pin: string = '';
   isPVisible: boolean = false;
@@ -26,19 +30,27 @@ export class HomePage {
     private backupApi: ApiService,
   ) {}
 
+  /**
+   * @description load existing PIN items on initialization
+   */
   async ngOnInit(){ await this.service.load(); }
 
+  /**
+   * @description toggle PIN visibility
+   */
   togglePVisible(){ this.isPVisible = ! this.isPVisible; }
 
+  /**
+   * @description generate a new PIN item
+   * @throws alert if validation fails or unexpected error occurs
+   */
   async generate(){
     const n = this.name.trim();
     const p = this.pin.trim();
 
     if (!n){ alert ('name is required'); return; }
-
     if (!p){ alert('PIN is required'); return; }
-
-    if (!/^\d{4,8}$/.test(p)){
+    if (!/^\d{4,8}$/.test(p)){ 
       alert('PIN must be exactly 4 digits to 8 digits');
       return;
     }
@@ -59,7 +71,11 @@ export class HomePage {
     }
   }
 
-
+  /**
+   * @description delete a PIN item after confirmation
+   * @param index number - index of the item to delete
+   * @throws alert if user cancels the deletion
+   */
   async delete(index: number){
     const alert = await this.alertCtrl.create({
       header: 'Löschen',
@@ -81,7 +97,11 @@ export class HomePage {
     await alert.present();
   }
 
-
+  /**
+   * @description edit a PIN item using a modal dialog
+   * @param index number - index of the item to edit
+   * @throws alert if validation fails or unexpected error occurs
+   */
   async edit(index: number){
     const item = this.service.itemList[index];
     if (!item) return;
@@ -92,12 +112,12 @@ export class HomePage {
         index,
         item: { ...item },
       },
+      cssClass: 'edit-sheet',
       breakpoints: [0, 0.5, 0.9],
       initialBreakpoint: 0.5,
     });
 
     await modal.present();
-
 
     const { data , role } = await modal.onWillDismiss<{
       index: number;
@@ -117,10 +137,18 @@ export class HomePage {
     }
   }
 
+  /**
+   * @description navigate to the detail page of a PIN item
+   * @param item PinItem - the item to navigate to
+   */
   navigateTo(item: PinItem){
     this.router.navigate(['/pin-detail', item.name]);
   }
 
+  /**
+   * @description export PIN items to JSON backup
+   * @throws alert if export fails
+   */
   async exportJSON(){
     try{
       const app = environment.backupApi.appName;
@@ -152,6 +180,11 @@ export class HomePage {
     }
   }
 
+  /**
+   * @description import PIN items from the latest JSON backup
+   * @returns {void}
+   * @throws alert if import fails
+   */
   async importJSON(){
     try{
       const app = environment.backupApi.appName;
@@ -160,7 +193,7 @@ export class HomePage {
       const items = payload?.items;
 
       if (!Array.isArray(items)){
-        alert('Backup ist ungültig: payload fehlt oder kein Array')
+        alert('Backup ist ungültig: payload fehlt oder kein Array');
         return;
       }
 
@@ -176,13 +209,16 @@ export class HomePage {
         ]
       })
       await alerts.present();
-
-
     }catch(e: any){
       alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
     }
   }
 
+  /**
+   * @description list available backups and allow user to select one for import
+   * @throws alert if import fails
+   * @returns {void}
+   */
   async listImport(){
     try{
       const app = environment.backupApi.appName;
@@ -228,11 +264,13 @@ export class HomePage {
     }
   }
 
-
+  /**
+   * @description Debugging: check the health status of the backup API
+   * @throws alert if health check fails
+   */
   async health() {
     try {
       const res = await this.backupApi.health();
-
       const alert = await this.alertCtrl.create({
         header: res.ok ? 'Health OK' : 'Health FEHLER',
         message: `<pre>${JSON.stringify(res, null, 2)}</pre>`,

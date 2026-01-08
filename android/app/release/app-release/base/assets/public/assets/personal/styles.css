@@ -1,0 +1,122 @@
+/* ================================
+   THEME – Personal (Blau → Pink)
+   ================================ */
+
+:root {
+  /* Font */
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Base colors */
+  --color-primary: #1e30f3;
+  --color-primary-rgb: 30, 48, 243;
+
+  --color-secondary: #e21e80;
+  --color-secondary-rgb: 226, 30, 128;
+
+  --color-dark: #212529;
+  --color-light: #f8f9fa;
+
+  --color-background: #ffffff;
+  --color-text: #212529;
+
+  /* Ionic primary (Buttons etc.) */
+  --ion-color-primary: var(--color-primary);
+  --ion-color-primary-rgb: var(--color-primary-rgb);
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1a2ad6;
+  --ion-color-primary-tint: #3546f4;
+
+  /* Gradients (ruhiger App-Background) */
+  --gradient-page-bg: linear-gradient(
+    135deg,
+    rgba(var(--ion-color-primary-tint), 0.03),
+    rgba(var(--color-secondary-rgb), 0.03)
+  );
+
+  /* Stärkerer Akzent (Hero) */
+  --gradient-hero: linear-gradient(
+    135deg,
+    rgba(var(--color-primary-rgb), 0.85),
+    rgba(var(--color-secondary-rgb), 0.85)
+  );
+
+  /* Radius & Shadow */
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+
+  --shadow-card: 0 1rem 2rem rgba(0, 0, 0, 0.10);
+}
+
+/* App background */
+ion-content {
+  --background: var(--gradient-hero);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Hero */
+.app-hero {
+  padding-top: calc(2.5rem + env(safe-area-inset-top));
+  background: var(--gradient-hero);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2rem;
+  box-shadow: var(--shadow-card);
+}
+
+ion-header ion-toolbar {
+  --background: transparent;
+  background: var(--gradient-hero);
+  color: #fff;
+}
+
+ion-header ion-title,
+ion-header ion-button,
+ion-header ion-icon {
+  color: #fff;
+}
+
+/* Cards */
+ion-card {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  overflow: hidden; /* wichtig für runde Ecken mit Inhalt */
+}
+
+/* Form Items in Cards */
+ion-card ion-item {
+  --background: var(--color-light);
+}
+
+/* Hover (nur Desktop, optional) */
+@media (hover: hover) and (pointer: fine) {
+  ion-card ion-item:hover {
+    --background: rgba(var(--color-primary-rgb), 0.08);
+  }
+}
+
+/* Inputs: Text schwarz */
+ion-input,
+ion-textarea {
+  --color: #000;
+  --placeholder-color: #6c757d;
+  --placeholder-opacity: 1;
+}
+
+.center-wrapper {
+  min-height: 100%;
+  display: flex;
+  align-items: center;      /* vertikal */
+  justify-content: center;  /* horizontal */
+  padding-bottom: 30vh;         /* <<< HIER steuern */
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.pin-card {
+
+  width: 100%;
+  max-width: 420px; /* wichtig für schönes Mobile-Look */
+}

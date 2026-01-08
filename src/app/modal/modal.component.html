@@ -7,11 +7,14 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [scrollY]="true">
   <ion-item [class.edit-active]="isEditName">
     <ion-label position="stacked">name</ion-label>
-    <ion-input [(ngModel)]="item.name" class="edit-btn" [readonly]="!isEditName"></ion-input>
-    
+    <ion-input 
+      #nameInput
+      [(ngModel)]="item.name" 
+      [readonly]="!isEditName">
+    </ion-input>
     <ion-button slot="end" fill="clear" (click)="toggleEditName()">
       <ion-icon 
         slot="icon-only" 
@@ -22,10 +25,14 @@
     </ion-button>
   </ion-item>
 
-
   <ion-item [class.edit-active]="isEditPin">
     <ion-label position="stacked">PIN</ion-label>
-    <ion-input [(ngModel)]="item.pin" class="edit-btn" inputmode="numeric" [readonly]="!isEditPin"></ion-input>
+    <ion-input 
+      #pinInput
+      [(ngModel)]="item.pin" 
+      inputmode="numeric" 
+      [readonly]="!isEditPin">
+    </ion-input>
     <ion-button slot="end" fill="clear" (click)="toggleEditPin()">
       <ion-icon 
         slot="icon-only" 

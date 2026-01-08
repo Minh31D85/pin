@@ -8,32 +8,34 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-card class="pin-card">
-    <ion-card-content>
+   <div class="center-wrapper">
+    <ion-card class="pin-card">
+      <ion-card-content>
 
-      <div class="pin-display">
-        <ng-container *ngIf="isRevealed; else hiddenPin">
-          {{ entry?.pin }}
-        </ng-container>
+        <div class="pin-display">
+          <ng-container *ngIf="isRevealed; else hiddenPin">
+            {{ entry?.pin }}
+          </ng-container>
 
-        <ng-template #hiddenPin>
-          {{ maskPin(entry?.pin ?? '') }}
-        </ng-template>
-      </div>
+          <ng-template #hiddenPin>
+            {{ maskPin(entry?.pin ?? '') }}
+          </ng-template>
+        </div>
 
-      <ion-progress-bar
-        *ngIf="isRevealed"
-        [value]="progress">
-      </ion-progress-bar>
+        <ion-progress-bar
+          *ngIf="isRevealed"
+          [value]="progress">
+        </ion-progress-bar>
 
-      <div class="actions">
-        <ion-button 
-          fill="clear"
-          (click)="toggleReveal()" [disabled]="!entry">
-          <ion-icon slot="icon-only" [name]="isRevealed ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
-        </ion-button>
-      </div>
+        <div class="actions">
+          <ion-button 
+            fill="clear"
+            (click)="toggleReveal()" [disabled]="!entry">
+            <ion-icon slot="icon-only" [name]="isRevealed ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </ion-button>
+        </div>
 
-    </ion-card-content>
-  </ion-card>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

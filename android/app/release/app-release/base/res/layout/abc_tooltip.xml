@@ -22,7 +22,7 @@ paddingEnd!@dimen/tooltip_horizontal_padding"((´‡„2,
 background?attr/tooltipFrameBackground"((Ô„2)
 '›‚Œøattr/tooltipFrameBackground0"¢
 *http://schemas.android.com/apk/res/androidtextAppearance'@style/TextAppearance.AppCompat.Tooltip"((´€„22
-0â¸ø&style/TextAppearance.AppCompat.Tooltip0"}
+0â¼ø&style/TextAppearance.AppCompat.Tooltip0"}
 *http://schemas.android.com/apk/res/androidlayout_margin@dimen/tooltip_margin"((ö„2 
 ù€˜ødimen/tooltip_margin0@"‘
 *http://schemas.android.com/apk/res/androidpaddingBottom@dimen/tooltip_vertical_padding"((Ù„2*

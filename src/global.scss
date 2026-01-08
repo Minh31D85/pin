@@ -34,4 +34,12 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+
+/* Dark Mode vollständig deaktivieren */
+:root,
+html,
+body,
+ion-app {
+  color-scheme: light;
+}
