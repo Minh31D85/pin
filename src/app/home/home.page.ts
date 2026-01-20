@@ -188,19 +188,27 @@ export class HomePage {
   async importJSON(){
     try{
       const app = environment.backupApi.appName;
-      const latest = await this.backupApi.latest(app);
-      const payload = latest.backup?.payload;
-      const items = payload?.items;
+      const latestRes = await this.backupApi.latest(app);
+      const latestPath = latestRes?.latest?.path ?? '';
 
-      if (!Array.isArray(items)){
-        alert('Backup ist ungültig: payload fehlt oder kein Array');
+      if(!latestPath){
+        alert('Kein Backup gefunden')
         return;
-      }
+      } 
+
+      const res = await this.backupApi.import<{ items: PinItem[] }>({app, path: latestPath});
+      const items = (res?.payload as any)?.items;
+
+      if(!Array.isArray(items)){
+        alert('Backup ist ungültig: payload.items fehlt oder kein Array'); 
+        return;
+      } 
 
       this.service.itemList = items;
       await this.service.save();
+
       const alerts = await this.alertCtrl.create({
-        header: `Import erfolgreich :\n${latest.path}`,
+        header: `Import erfolgreich :\n${latestPath}`,
         buttons: [
           {
             text: 'Ok',
@@ -224,24 +232,31 @@ export class HomePage {
       const app = environment.backupApi.appName;
       const files = await this.backupApi.list(app);
 
-      if(!files.length){ alert('Kein Backup gefunden'); return }
+      if(!files.length){
+        alert('Kein Backup gefunden') 
+        return 
+      }
 
       const alerts = await this.alertCtrl.create({
         header: 'Backup auswählen',
-        inputs: files.slice(0,10).map((path, idx) => ({
+        inputs: files.slice(0, 10).map((f, idx)=>({
           type: 'radio',
-          label: path,
-          value: path,
+          label: `${f.filename} (${f.modifiedAt})`,
+          value: f.path,
           checked: idx === 0,
         })),
         buttons:[
           {
             text: 'Importieren',
             handler: async (path: string) => {
-              const res = await this.backupApi.import<any>(app, path);
-              const items = res.payload?.items;
+              const res = await this.backupApi.import<{items: PinItem[]}>({app, path});
+              const items = (res?.payload as any)?.items;
 
-              if(!Array.isArray(items)){ alert('Backup ist ungültig'); return};
+              if(!Array.isArray(items)){ 
+                alert('Backup ist ungültig') 
+                return
+              };
+
               this.service.itemList = items;
               await this.service.save();
 
@@ -253,11 +268,10 @@ export class HomePage {
             }
           },
           {
-            text: 'Abbrechen',
-            role: 'cancel'
+            text: 'Abbrechen', role: 'cancel'
           }
         ]
-      })
+      });
       await alerts.present();
     }catch(e: any){
       alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
@@ -272,23 +286,13 @@ export class HomePage {
     try {
       const res = await this.backupApi.health();
       const alert = await this.alertCtrl.create({
-        header: res.ok ? 'Health OK' : 'Health FEHLER',
+        header: res.status === 'ok' ? 'Health OK' : 'Health FEHLER',
         message: `<pre>${JSON.stringify(res, null, 2)}</pre>`,
         buttons: [{ text: 'OK', role: 'cancel' }],
       });
       await alert.present();
     } catch (e: any) {
-      const msg =
-        e?.error
-          ? (typeof e.error === 'string' ? e.error : JSON.stringify(e.error, null, 2))
-          : (e?.message ?? 'unbekannter Fehler');
-
-      const alert = await this.alertCtrl.create({
-        header: 'Health FEHLER',
-        message: `<pre>${msg}</pre>`,
-        buttons: [{ text: 'OK', role: 'cancel' }],
-      });
-      await alert.present();
+      alert(`Health fehlgeschlagen'}`);
     }
   }
 }

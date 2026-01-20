@@ -3,6 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
+export interface BackupFileInfo{
+  filename: string;
+  path: string;
+  bytes: number;
+  modifiedAt: string;
+}
+
 /**
  * @description Request payload for exporting a backup.
  * @template TPayload - The type of the payload to be backed up.
@@ -10,42 +17,52 @@ import { environment } from 'src/environments/environment';
 export interface BackupExportReq<TPayload = any>{
   schemaVersion: number;
   payload: TPayload;
-  meta?: Record<string, any>;
+  meta?: any;
 };
 
 /**
  * @description Response payload for exporting a backup.
  */
 export interface BackupExportRes{
-  stored: boolean;
-  path: string;
+  message: string
+  file: BackupFileInfo;
 };
 
 /**
  * @description Response payload for listing backup files.
  */
 export interface BackupListRes{
-  files: string[];
-};
-
-/**
- * @description Response payload for importing a backup.
- * @template TPayload - The type of the payload that was backed up.
- */
-export interface BackupImportRes<TPayload = any>{
-  imported: boolean;
-  schemaVersion: number;
-  payload: TPayload;
+  app: string;
+  count: number;
+  items: BackupFileInfo[];
 };
 
 /**
  * @description Response payload for retrieving the latest backup.
  * @template TBackup - The type of the backup payload.
  */
-export interface BackupLatestRes<TBackup = any>{
+export interface BackupLatestRes{
+  app: string;
+  latest: BackupFileInfo | null;
+}
+
+export interface BackupImportReq{
+  app: string;
   path: string;
-  backup: TBackup
+}
+
+/**
+ * @description Response payload for importing a backup.
+ * @template TPayload - The type of the payload that was backed up.
+ */
+export interface BackupImportRes<TPayload = any>{
+  app: string;
+  schemaVersion: number;
+  exportedAt: string;
+  payload: TPayload;
 };
+
+;
 
 @Injectable({ providedIn: 'root'})
 
@@ -81,32 +98,20 @@ export class ApiService {
     return `${base}${p}`;
   }
 
+
   /**
    * @description Lists backup files for a given application.
    * @param app string - The application identifier.
    * @returns Promise<string[]> - A promise that resolves to an array of backup file names.
    */
-  async list(app: string): Promise<string[]>{
+  async list(app: string): Promise<BackupFileInfo[]>{
     const res = await firstValueFrom(
-      this.http.get<BackupListRes>(this.url(`/backups/${encodeURIComponent(app)}/list`),{
-        headers: this.headers(),
-      })
+      this.http.get<BackupListRes>(
+        this.url(`/backups/?app=${encodeURIComponent(app)}`),
+        { headers: this.headers()},
+      )
     );
-    return res.files ?? [];
-  }
-
-  /**
-   * @description Exports a backup for a given application.
-   * @param app string - The application identifier.
-   * @param body BackupExportReq<TPayload> - The backup export request payload.
-   * @returns Promise<BackupExportRes> - A promise that resolves to the backup export response. 
-   */
-  async export<TPayload>(app: string, body: BackupExportReq<TPayload>): Promise<BackupExportRes> {
-    return await firstValueFrom(
-      this.http.post<BackupExportRes>(this.url(`/backups/${encodeURIComponent(app)}/export`), body, {
-        headers: this.headers(),
-      })
-    );
+    return res.items ?? [];
   }
 
   /**
@@ -116,9 +121,27 @@ export class ApiService {
    */
   async latest(app: string): Promise<BackupLatestRes> {
     return await firstValueFrom(
-      this.http.get<BackupLatestRes>(this.url(`/backups/${encodeURIComponent(app)}/latest`), {
-        headers: this.headers(),
-      })
+      this.http.get<BackupLatestRes>(
+        this.url(`/backups/latest/?app=${encodeURIComponent(app)}`), 
+        { headers: this.headers(),}
+      )
+    );
+  }
+
+
+  /**
+   * @description Exports a backup for a given application.
+   * @param app string - The application identifier.
+   * @param body BackupExportReq<TPayload> - The backup export request payload.
+   * @returns Promise<BackupExportRes> - A promise that resolves to the backup export response. 
+   */
+  async export<TPayload>(app: string, body: BackupExportReq<TPayload>): Promise<BackupExportRes> {
+    return await firstValueFrom(
+      this.http.post<BackupExportRes>(
+        this.url(`/backups/export/`),
+        { app, ...body },
+        { headers: this.headers()}
+      )
     );
   }
 
@@ -128,25 +151,26 @@ export class ApiService {
    * @param path string - The path to the backup file to be imported.
    * @returns Promise<BackupImportRes<TPayload>> - A promise that resolves to the backup import response. 
    */
-  async import<TPayload>(app: string, path: string): Promise<BackupImportRes<TPayload>> {
+  async import<TPayload>(req: BackupImportReq): Promise<BackupImportRes<TPayload>> {
     return await firstValueFrom(
-      this.http.post<BackupImportRes<TPayload>>(this.url(`/backups/${encodeURIComponent(app)}/import`), { path }, {
-        headers: this.headers(),
-      })
+      this.http.post<BackupImportRes<TPayload>>(
+        this.url(`/backups/import/`),
+        req, 
+        { headers: this.headers()}
+      )
     );
   }
+
 
   /**
    * @description For debugging: Checks the health status of the backup API service.
    * @returns Promise<{ ok: boolean; storage_writable?: boolean; time?: string; error?: string }> - A promise that resolves to the health status response.
    */
-  async health(): Promise<{ ok: boolean; storage_writable?: boolean; time?: string; error?: string }> {
+  async health(): Promise<{ status: 'ok' }> {
     return await firstValueFrom(
-      this.http.get<{ ok: boolean; storage_writable?: boolean; time?: string; error?: string }>(
-        this.url('/_health'),
-        {
-         headers: new HttpHeaders({ Accept: 'application/json' }),
-        }
+      this.http.get<{ status: 'ok' }>(
+        this.url('/health'),
+        { headers: new HttpHeaders({ Accept: 'application/json' }) }
       )
     );
   }
