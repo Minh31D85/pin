@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+   
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <div class="pin-wrapper">
+        <ion-input
+          [type]="showPin ? 'text' : 'password'" maxlengt="4"
+          inputmode="numeric"
+          [(ngModel)]="pin"
+          (keydown.enter)="login()"
+          placeholder="PIN"
+          class="pin-input">
+        </ion-input>
+
+        <ion-button
+          fill="clear"
+          (click)="showPin = !showPin"
+          class="show-pin-button">
+          <ion-icon [name]="showPin ? 'eye-off' : 'eye'"></ion-icon>
+        </ion-button>
+      </div>
+      <ion-button expand="block" (click)="login()" class="login-button">
+        Login
+      </ion-button>
+      <ion-button expand="block" (click)="performBiometric()">
+        FACE IS / FINGERPRINT
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

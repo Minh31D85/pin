@@ -66,7 +66,10 @@ export class PinDetailPage implements OnInit {
    * @param seconds number - The duration in seconds to show the pin.
    * @returns {void}
    */
-  private showPin(seconds: number) {
+  private async showPin(seconds: number) {
+    const verified = await this.service.verifyBiometric('Biometrische Bestätigung zum Teilen der Zugangsdaten');
+    if(!verified){alert('Biometrische Authentifizierung fehlgeschlagen'); return}
+
     this.clearTimers();
     this.isRevealed = true;
     this.progress = 1;

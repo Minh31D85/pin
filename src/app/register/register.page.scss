@@ -1,0 +1,65 @@
+:host {
+
+  ion-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .center-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateY(6vh);
+  }
+
+  ion-card {
+    width: 92%;
+    max-width: 420px;
+  }
+
+  ion-card-content {
+    overflow: visible;
+    padding-bottom: 16px;
+  }
+
+  .register-button {
+    width: 92%;
+    max-width: 420px;
+    margin-top: 32px;
+  }
+
+  .pin-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 12px;
+  }
+
+  .pin-input {
+    width: 100%;
+    text-align: center;
+    font-size: 2.2rem; 
+    font-weight: 600;
+    letter-spacing: 12px;
+  }
+
+  .show-pin-button {
+  margin-top: 10px;
+
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 0;
+  --padding-bottom: 0;
+
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+
+  .show-pin-button ion-icon {
+    font-size: 22px;
+  }
+}

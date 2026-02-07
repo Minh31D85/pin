@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { Preferences } from '@capacitor/preferences';
 
 export interface BackupFileInfo{
   filename: string;
@@ -70,10 +71,59 @@ export class ApiService {
   /**
    * @description Base URL for the backup API.API key for authenticating requests to the backup API.
    */
-  private readonly baseUrl = environment.backupApi.baseUrl;
+  private baseUrl: string = '';
+  private port: string = '';
+  private ip: string = '';
   private readonly apiKey = environment.backupApi.apiKey;
 
   constructor(private http: HttpClient){}
+
+  async init(){
+    const ipRes = await Preferences.get({ key: 'server_ip' });
+    const portRes = await Preferences.get({ key: 'server_port' });
+
+    this.ip = ipRes.value ?? '';
+    this.port = portRes.value ?? '';
+
+    if(this.ip && this.port){ this.buildBaseUrl()};
+    //debugging
+    console.log('INIT', this.ip, this.port);
+  }
+
+  async setConnection(ip: string, port: string){
+    this.validate(ip, port);
+
+    this.ip = ip;
+    this.port = port;
+    
+    await Preferences.set({ key: 'server_ip', value: ip });
+    await Preferences.set({ key: 'server_port', value: port});
+
+    this.buildBaseUrl();
+  }
+
+  getConnection(){
+    return {ip: this.ip, port: this.port };
+  }
+
+  private buildBaseUrl(){
+    this.baseUrl = `http://${this.ip}:${this.port}/api`;
+  }
+
+  private validate(ip: string, port: string){
+    const ipRegex = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))([0-9]{1,3}\.){1,2}[0-9]{1,3}$/;
+
+    if(!ipRegex.test(ip)){throw new Error('Nur interne IP erlaubt');}
+
+    const p = parseInt(port, 10);
+
+    if(!p || p < 1 || p > 65535){ throw new Error('Port ungültig')};
+  }
+
+  private getBaseUrl(): string{
+    if(!this.baseUrl){throw new Error('Server nicht gesetzt');}
+    return this.baseUrl
+  }
 
   /**
    * @description Constructs the HTTP headers for API requests, including the API key for authentication.
@@ -93,7 +143,7 @@ export class ApiService {
    * @returns string - The full URL.
    */
   private url(path: string): string {
-    const base = this.baseUrl.replace(/\/+$/, '');
+    const base = this.getBaseUrl().replace(/\/+$/, '');
     const p = path.startsWith('/') ? path : `/${path}`;
     return `${base}${p}`;
   }

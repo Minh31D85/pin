@@ -1,0 +1,65 @@
+:host {
+
+  ion-content {
+    --background: var(--gradient-hero);
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 12vh;
+  }
+
+  ion-card {
+    width: 92%;
+    max-width: 420px;
+    border-radius: 18px;
+    padding: 6px 6px 16px 6px;
+  }
+
+  .title {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 6px;
+    margin-bottom: 18px;
+    opacity: 0.9;
+  }
+
+  ion-item {
+    --background: transparent;
+    --padding-start: 14px;
+    --inner-padding-end: 10px;
+    margin-top: 12px;
+  }
+
+  ion-input {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  ion-input::part(native) {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  .ip-input::part(native) {
+    letter-spacing: 2px;
+  }
+
+  .port-input::part(native) {
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 4px;
+  }
+
+  .save-btn {
+    margin-top: 26px;
+    height: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+  }
+}

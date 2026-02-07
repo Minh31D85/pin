@@ -3,17 +3,29 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+  {
     path: 'home',
     loadChildren: () => import('./home/home.module').then( m => m.HomePageModule)
   },
   {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  },
-  {
     path: 'pin-detail/:name',
     loadChildren: () => import('./pin-detail/pin-detail.module').then( m => m.PinDetailPageModule)
+  },
+  {
+    path: 'register',
+    loadChildren: () => import('./register/register.module').then( m => m.RegisterPageModule)
+  },
+  {
+    path: 'login',
+    loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
+  },
+  {
+    path: 'ip-adress',
+    loadChildren: () => import('./ip-adress/ip-adress.module').then( m => m.IpAdressPageModule)
   },
 ];
 

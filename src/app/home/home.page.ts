@@ -6,6 +6,7 @@ import { ModalComponent } from '../modal/modal.component';
 import { AlertController } from '@ionic/angular';
 import { ApiService } from '../api-service';
 import { environment } from 'src/environments/environment';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -28,6 +29,7 @@ export class HomePage {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private backupApi: ApiService,
+    private navCtrl: NavController,
   ) {}
 
   /**
@@ -276,6 +278,10 @@ export class HomePage {
     }catch(e: any){
       alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
     }
+  }
+
+  async ipAdress(){
+    this.navCtrl.navigateRoot('/ip-adress')
   }
 
   /**

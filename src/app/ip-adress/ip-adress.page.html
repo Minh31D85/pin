@@ -1,0 +1,37 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/home"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="wrapper">
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-input
+            class="ip-input"
+            placeholder="IP-Adresse"
+            type="string"
+            [(ngModel)]="ip">
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input
+            class="port-input"
+            placeholder="Port"
+            inputmode="numeric"
+            [(ngModel)]="port">
+          </ion-input>
+        </ion-item>
+
+        <ion-button (click)="saveIp()">
+          Speichern
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>  
+</ion-content>

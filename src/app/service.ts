@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
+import { BiometryType, NativeBiometric } from 'capacitor-native-biometric';
 
 /**
  * @description Interface representing a object with a name and pin.
@@ -119,6 +120,41 @@ export class Service {
     }
     this.itemList[index] = { name: newName, pin: newPin };
     await this.save();
+  }
+
+  async verifyBiometric(reason: string):Promise<boolean>{
+    try{
+      const availability = await NativeBiometric.isAvailable({ useFallback: true });
+      if(!availability.isAvailable) return false;
+
+      await NativeBiometric.verifyIdentity({
+        reason,
+        title: 'Bestätigung erforderlich',
+        subtitle: 'FINGERPRINT',
+        description: 'Biometrische Authentifizierung notwendig'
+      });
+      return true;
+    }catch{
+      alert('Biometrische Authentifizierung fehlgeschlagen')
+      return false;
+    }
+  }
+
+  async loginBiometric():Promise<boolean>{
+    try{
+      const result = await NativeBiometric.isAvailable({ useFallback: true });
+      if(!result.isAvailable)return false;
+
+      await NativeBiometric.verifyIdentity({
+        reason:'Authentication',
+        title: 'Login',
+        subtitle: result.biometryType === BiometryType.FACE_ID ? 'FACE ID' : 'FINGERPRINT',
+        description: 'Your Face ID needed for authorisation',
+      });
+      return true;
+    }catch{
+      return false;
+    }
   }
 }
 

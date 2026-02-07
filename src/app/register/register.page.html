@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="center-wrapper">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Gebe ein vierstelligen PIN ein:</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="pin-wrapper">
+          <ion-input
+            [type]="showPin ? 'text' : 'password'"
+            maxlength="4"
+            inputmode="numeric"
+            (keydown.enter)="registerPin()"
+            [(ngModel)]="pin" class="pin-input"
+            placeholder="****"
+            required>
+          </ion-input>
+
+          <ion-button
+            fill="clear"
+            (click)="showPin = !showPin"
+            class="show-pin-button">
+            <ion-icon [name]="showPin ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    <ion-button expand="block" (click)="registerPin()" class="register-button">Registrieren</ion-button>
+  </div>
+</ion-content>
