@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { App } from '@capacitor/app';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-root',
@@ -6,6 +8,22 @@ import { Component } from '@angular/core';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
+
 export class AppComponent {
-  constructor() {}
+  private wasInBackground = false;
+
+  constructor(private navCtrl: NavController) { this.setupLock() }
+
+  setupLock(){
+    App.addListener('appStateChange', ({ isActive })=>{
+      if(!isActive){
+        this.wasInBackground=true; 
+        return
+      }
+      if(isActive && this.wasInBackground){
+        this.wasInBackground = false;
+        this.navCtrl.navigateRoot('/login');
+      }
+    });
+  }
 }
