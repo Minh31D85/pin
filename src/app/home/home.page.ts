@@ -8,6 +8,14 @@ import { ApiService } from '../api-service';
 import { environment } from 'src/environments/environment';
 import { NavController } from '@ionic/angular';
 
+/**
+ * This component serves as the home page of the application, allowing users to manage their PIN items.
+ * Users can add new PIN items, edit existing ones, delete items, and navigate to detailed views of each item.
+ * The component also provides functionality for exporting and importing PIN items as JSON backups, as well as checking the health status of the backup API.
+ * 
+ * Note: The component relies on a service for data management and uses Ionic components for modals and alerts to enhance user interaction.
+ */
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -16,9 +24,6 @@ import { NavController } from '@ionic/angular';
 })
 
 export class HomePage {
-  /**
-   * @description variables for new PIN generation
-   */
   name: string = '';
   pin: string = '';
   isPVisible: boolean = false;
@@ -32,15 +37,18 @@ export class HomePage {
     private navCtrl: NavController,
   ) {}
 
+  
   /**
-   * @description load existing PIN items on initialization
+   * @description navigate to the IP address configuration page
    */
   async ngOnInit(){ await this.service.load(); }
+
 
   /**
    * @description toggle PIN visibility
    */
   togglePVisible(){ this.isPVisible = ! this.isPVisible; }
+
 
   /**
    * @description generate a new PIN item
@@ -73,6 +81,7 @@ export class HomePage {
     }
   }
 
+  
   /**
    * @description delete a PIN item after confirmation
    * @param index number - index of the item to delete
@@ -98,6 +107,7 @@ export class HomePage {
     })
     await alert.present();
   }
+
 
   /**
    * @description edit a PIN item using a modal dialog
@@ -139,6 +149,7 @@ export class HomePage {
     }
   }
 
+
   /**
    * @description navigate to the detail page of a PIN item
    * @param item PinItem - the item to navigate to
@@ -146,6 +157,7 @@ export class HomePage {
   navigateTo(item: PinItem){
     this.router.navigate(['/pin-detail', item.name]);
   }
+
 
   /**
    * @description export PIN items to JSON backup
@@ -182,10 +194,9 @@ export class HomePage {
     }
   }
 
+
   /**
    * @description import PIN items from the latest JSON backup
-   * @returns {void}
-   * @throws alert if import fails
    */
   async importJSON(){
     try{
@@ -224,10 +235,9 @@ export class HomePage {
     }
   }
 
+
   /**
    * @description list available backups and allow user to select one for import
-   * @throws alert if import fails
-   * @returns {void}
    */
   async listImport(){
     try{
@@ -280,9 +290,14 @@ export class HomePage {
     }
   }
 
+
+  /**
+   * @description navigate to the IP address configuration page
+   */
   async ipAdress(){
     this.navCtrl.navigateRoot('/ip-adress')
   }
+
 
   /**
    * @description Debugging: check the health status of the backup API

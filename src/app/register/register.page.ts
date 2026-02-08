@@ -2,6 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { Preferences } from '@capacitor/preferences';
 
+/**
+ * This page allows the user to set a 4-digit PIN code for authentication. The PIN is stored securely using Capacitor's Preferences API.
+ * The user must enter a valid 4-digit numeric PIN, which is then saved and the user is navigated to the IP address configuration page.
+ * The page includes basic validation to ensure the PIN is exactly 4 digits and numeric before saving.
+ * 
+ * Note: In a production application, consider using a more secure storage solution for sensitive data like PINs, such as Capacitor's Secure Storage plugin.
+ * The UI should include an input field for the PIN and a button to trigger the registration process. The input should be of type "password" to hide the entered digits.
+ */
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',

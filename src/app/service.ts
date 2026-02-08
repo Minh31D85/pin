@@ -3,10 +3,15 @@ import { Preferences } from '@capacitor/preferences';
 import { BiometryType, NativeBiometric } from 'capacitor-native-biometric';
 
 /**
- * @description Interface representing a object with a name and pin.
- * @property {string} name - The name of the pinned item.
- * @property {string} pin - The pin associated with the item.
+ * The service is designed to be used in an Angular/Ionic application and can be injected into components that require access to the pinned items or biometric authentication functionality. 
+ * The methods provided allow for easy management of the pinned items and ensure that changes are persisted across app sessions.
+ * 
+ * Note: In a production application, consider using a more secure storage solution for sensitive data like PINs, such as Capacitor's Secure Storage plugin. 
+ * Additionally, ensure that error handling is robust and that user feedback is clear when operations fail 
+ * (e.g., when trying to add a duplicate name or when biometric authentication fails).
  */
+
+
 export interface PinItem {
   name: string;
   pin: string;
@@ -20,13 +25,14 @@ export class Service {
    */
   private readonly PIN_KEY = 'itemList';
 
+
   /**
-   * @description Internal In-memory-cache of pinned items. 
-   * Private to prevent uncontrolled mutations. 
+   * @description Internal In-memory-cache of pinned items. Private to prevent uncontrolled mutations. 
    */
   public itemList: PinItem[] = [];
 
   constructor(){}
+  
 
   /**
    * @description Get the list of pinned items.
@@ -36,6 +42,7 @@ export class Service {
     return [...this.itemList];
   }
    
+  
   /**
    * @description load listed items from persistent storage.
    * @returns {Promise<void>} A promise that resolves when loading is complete.
@@ -44,6 +51,7 @@ export class Service {
     const { value} = await Preferences.get({ key: this.PIN_KEY });
     this.itemList = value ? (JSON.parse(value) as PinItem[]) : [];
   }
+
 
   /**
    * @description save listed items to persistent storage.
@@ -56,6 +64,7 @@ export class Service {
     });
   }
 
+
   /**
    * @description Check if an item with the given name exists. Lowercase and trim insensitive.
    * @param name - The name to check for existence.
@@ -66,6 +75,7 @@ export class Service {
     return this.itemList.some(
       item => item.name.trim().toLocaleLowerCase() === normalized);
   }
+
 
   /**
    * @description Add a new pinned item.
@@ -79,6 +89,7 @@ export class Service {
     await this.save();
   }
 
+
   /**
    * @description Remove a pinned item by its index.
    * @param index 
@@ -89,6 +100,7 @@ export class Service {
     await this.save();  
   }
 
+
   /**
    * @description Clear all pinned items. Empties both in-memory cache and storage-key.
    * @returns {Promise<void>} A promise that resolves when all items are cleared from memory and storage.
@@ -97,6 +109,7 @@ export class Service {
     this.itemList = [];
     await Preferences.remove({ key: this.PIN_KEY });
   }
+
 
   /**
    * @description Update a pinned item at the specified index.
@@ -122,6 +135,12 @@ export class Service {
     await this.save();
   }
 
+
+  /**
+   * @description Verify biometric authentication.
+   * @param reason - The reason for biometric verification.
+   * @returns {Promise<boolean>} A promise that resolves to true if authentication is successful, false otherwise.
+   */
   async verifyBiometric(reason: string):Promise<boolean>{
     try{
       const availability = await NativeBiometric.isAvailable({ useFallback: true });
@@ -130,16 +149,21 @@ export class Service {
       await NativeBiometric.verifyIdentity({
         reason,
         title: 'Bestätigung erforderlich',
-        subtitle: 'FINGERPRINT',
+        subtitle: '',
         description: 'Biometrische Authentifizierung notwendig'
       });
       return true;
-    }catch{
+    }catch(error){
       alert('Biometrische Authentifizierung fehlgeschlagen')
       return false;
     }
   }
 
+
+  /**
+   * @description Perform biometric login authentication.
+   * @returns {Promise<boolean>} A promise that resolves to true if login is successful, false otherwise.
+   */
   async loginBiometric():Promise<boolean>{
     try{
       const result = await NativeBiometric.isAvailable({ useFallback: true });

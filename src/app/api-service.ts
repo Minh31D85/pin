@@ -4,6 +4,25 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Preferences } from '@capacitor/preferences';
 
+
+/**
+ * The ApiService is responsible for managing the connection to the backup API and providing methods to interact with it. 
+ * It handles the initialization of the connection parameters (IP and port), validates them, and provides methods for listing backups, 
+ * retrieving the latest backup, exporting backups, and importing backups. 
+ * The service uses Angular's HttpClient to make HTTP requests to the backup API and includes error handling for connection issues. 
+ * It also ensures that the API key is included in the headers of each request for authentication purposes.
+ * 
+ * Note: The actual structure of the backup file information, export/import request and response payloads may vary based on the specific implementation of the backup API.
+ * @see {@link BackupFileInfo} for the structure of backup file information.
+ * @see {@link BackupExportReq} for the structure of the backup export request payload.
+ * @see {@link BackupExportRes} for the structure of the backup export response payload.
+ * @see {@link BackupListRes} for the structure of the backup list response payload.
+ * @see {@link BackupLatestRes} for the structure of the latest backup response payload.
+ * @see {@link BackupImportReq} for the structure of the backup import request payload.
+ * @see {@link BackupImportRes} for the structure of the backup import response payload.
+ */
+
+
 export interface BackupFileInfo{
   filename: string;
   path: string;
@@ -11,37 +30,23 @@ export interface BackupFileInfo{
   modifiedAt: string;
 }
 
-/**
- * @description Request payload for exporting a backup.
- * @template TPayload - The type of the payload to be backed up.
- */
 export interface BackupExportReq<TPayload = any>{
   schemaVersion: number;
   payload: TPayload;
   meta?: any;
-};
+}
 
-/**
- * @description Response payload for exporting a backup.
- */
 export interface BackupExportRes{
   message: string
   file: BackupFileInfo;
-};
+}
 
-/**
- * @description Response payload for listing backup files.
- */
 export interface BackupListRes{
   app: string;
   count: number;
   items: BackupFileInfo[];
-};
+}
 
-/**
- * @description Response payload for retrieving the latest backup.
- * @template TBackup - The type of the backup payload.
- */
 export interface BackupLatestRes{
   app: string;
   latest: BackupFileInfo | null;
@@ -52,25 +57,18 @@ export interface BackupImportReq{
   path: string;
 }
 
-/**
- * @description Response payload for importing a backup.
- * @template TPayload - The type of the payload that was backed up.
- */
 export interface BackupImportRes<TPayload = any>{
   app: string;
   schemaVersion: number;
   exportedAt: string;
   payload: TPayload;
-};
+}
 
-;
 
 @Injectable({ providedIn: 'root'})
 
+
 export class ApiService {
-  /**
-   * @description Base URL for the backup API.API key for authenticating requests to the backup API.
-   */
   private baseUrl: string = '';
   private port: string = '';
   private ip: string = '';
@@ -78,6 +76,10 @@ export class ApiService {
 
   constructor(private http: HttpClient){}
 
+  /**
+   * @description Initializes the ApiService by retrieving the server IP and port from preferences and building the base URL if both are available.
+   * @returns Promise<void> - A promise that resolves when the initialization is complete.
+   */
   async init(){
     const ipRes = await Preferences.get({ key: 'server_ip' });
     const portRes = await Preferences.get({ key: 'server_port' });
@@ -86,10 +88,16 @@ export class ApiService {
     this.port = portRes.value ?? '';
 
     if(this.ip && this.port){ this.buildBaseUrl()};
-    //debugging
-    console.log('INIT', this.ip, this.port);
   }
 
+
+  /**
+   * @description Sets the connection parameters (IP and port) for the backup API, validates them, saves them to preferences, and builds the base URL for API requests.
+   * @param ip 
+   * @param port 
+   * @returns Promise<void> - A promise that resolves when the connection parameters have been set and the base URL has been built.
+   * @throws Error if the IP address is not a valid internal IP or if the port number is invalid.
+   */
   async setConnection(ip: string, port: string){
     this.validate(ip, port);
 
@@ -102,28 +110,52 @@ export class ApiService {
     this.buildBaseUrl();
   }
 
+  /**
+   * @description Retrieves the current connection parameters (IP and port) for the backup API.
+   * @returns {ip: string, port: string} - The current connection parameters.
+   */
   getConnection(){
     return {ip: this.ip, port: this.port };
   }
 
+
+  /**
+   * @description 
+   * Builds the base URL for API requests using the current IP and port values. 
+   * This method is called after validating and setting the connection parameters to ensure that the base URL is correctly constructed for subsequent API interactions.
+   * @returns void
+   * @throws Error if the IP or port values are not set before calling this method.
+   */
   private buildBaseUrl(){
     this.baseUrl = `http://${this.ip}:${this.port}/api`;
   }
 
+
+  /**
+   * @description Validates the provided IP address and port number to ensure they are in the correct format and within acceptable ranges.
+   * @throws Error if the IP address is not a valid internal IP or if the port number is invalid.
+   * @param ip 
+   * @param port 
+   */
   private validate(ip: string, port: string){
     const ipRegex = /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1]))([0-9]{1,3}\.){1,2}[0-9]{1,3}$/;
-
     if(!ipRegex.test(ip)){throw new Error('Nur interne IP erlaubt');}
 
     const p = parseInt(port, 10);
-
     if(!p || p < 1 || p > 65535){ throw new Error('Port ungültig')};
   }
 
+
+  /**
+   * @description Retrieves the base URL for API requests. This method checks if the base URL has been set and throws an error if it has not, ensuring that API requests are only made when a valid connection has been established.
+   * @throws Error if the base URL has not been set, indicating that the server connection parameters have not been properly configured.  
+   * @returns string - The base URL for API requests.
+   */
   private getBaseUrl(): string{
     if(!this.baseUrl){throw new Error('Server nicht gesetzt');}
     return this.baseUrl
   }
+
 
   /**
    * @description Constructs the HTTP headers for API requests, including the API key for authentication.
@@ -136,6 +168,7 @@ export class ApiService {
       'X-API-KEY': this.apiKey,
     });
   }
+
 
   /**
    * @description constructs the full URL for a given API path.
@@ -164,6 +197,7 @@ export class ApiService {
     return res.items ?? [];
   }
 
+
   /**
    * @description Retrieves the latest backup for a given application.
    * @param app string - The application identifier.   
@@ -180,7 +214,9 @@ export class ApiService {
 
 
   /**
-   * @description Exports a backup for a given application.
+   * @description 
+   * Exports a backup for a given application with the provided payload and metadata. 
+   * The method sends a POST request to the backup API to create a new backup file based on the provided data.
    * @param app string - The application identifier.
    * @param body BackupExportReq<TPayload> - The backup export request payload.
    * @returns Promise<BackupExportRes> - A promise that resolves to the backup export response. 
@@ -195,8 +231,9 @@ export class ApiService {
     );
   }
 
+
   /**
-   * @description Imports a backup for a given application from a specified path.
+   * @description Imports a backup for a given application from the specified backup file path.
    * @param app string - The application identifier.
    * @param path string - The path to the backup file to be imported.
    * @returns Promise<BackupImportRes<TPayload>> - A promise that resolves to the backup import response. 

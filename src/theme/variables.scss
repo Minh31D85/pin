@@ -63,12 +63,14 @@ ion-content {
   box-shadow: var(--shadow-card);
 }
 
+/** Header */
 ion-header ion-toolbar {
   --background: transparent;
   background: var(--gradient-hero);
   color: #fff;
 }
 
+/* Header Text & Icons */
 ion-header ion-title,
 ion-header ion-button,
 ion-header ion-icon {
@@ -102,6 +104,7 @@ ion-textarea {
   --placeholder-opacity: 1;
 }
 
+/* Center Wrapper for forms etc. */
 .center-wrapper {
   min-height: 100%;
   display: flex;
@@ -112,8 +115,8 @@ ion-textarea {
   padding-right: 1rem;
 }
 
+/* Pin Card max width */
 .pin-card {
-
   width: 100%;
   max-width: 420px; 
 }

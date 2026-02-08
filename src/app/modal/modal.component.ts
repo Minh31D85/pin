@@ -3,6 +3,14 @@ import { ModalController, IonicModule, IonInput } from '@ionic/angular';
 import { PinItem } from '../service';
 import { FormsModule } from '@angular/forms';
 
+/**
+ * This component allows users to edit the name and pin of a pin item. 
+ * It provides input fields for both properties and handles validation before saving changes.
+ * The modal can be dismissed without saving changes or with the updated data.
+ * 
+ * Note: The component uses Ionic's modal and input components for a consistent UI experience.
+ */
+
 @Component({
   selector: 'app-modal',
   templateUrl: './modal.component.html',
