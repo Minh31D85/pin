@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IpAdressPage } from './ip-adress.page';
+import { IpAdressPage } from './socket';
 
 describe('IpAdressPage', () => {
   let component: IpAdressPage;

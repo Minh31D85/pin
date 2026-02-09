@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { IpAdressPage } from './ip-adress.page';
+import { IpAdressPage } from './socket';
 
 const routes: Routes = [
   {

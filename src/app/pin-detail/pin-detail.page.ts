@@ -1,15 +1,54 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PinItem, Service } from '../service';
+import { PinItem, Service } from '../services/service';
 
 /**
- * This component displays the details of a specific pin item, including its name and pin. 
- * It allows users to reveal the pin temporarily with biometric verification and handles the timing for how long the pin is visible.
- * The component also ensures that timers are cleared when the component is destroyed to prevent memory leaks.
- * 
- * Note: The component relies on route parameters to identify which pin item to display and uses a service for data management and biometric verification.
+ * PinDetailPage
+ *
+ * Detailansicht eines einzelnen PIN-Eintrags mit zeitlich begrenzter
+ * Anzeige der sensiblen Daten nach biometrischer Verifikation.
+ *
+ * Ziel
+ * - Anzeige eines PIN-Eintrags anhand des Namens aus der Route
+ * - Geschützte Freigabe der PIN für kurze Zeit
+ * - Automatisches erneutes Maskieren nach Timeout
+ *
+ * Verantwortlichkeiten
+ * - Lädt Einträge aus dem Service beim Init
+ * - Ermittelt Ziel-Eintrag über Routenparameter name
+ * - Maskiert PIN standardmäßig
+ * - Startet biometrisch geschützte Enthüllung
+ * - Zeigt PIN nur für definierte Zeitspanne
+ * - Verwaltet Countdown und Fortschrittsanzeige
+ * - Beendet Anzeige automatisch
+ * - Räumt Timer beim Destroy auf
+ *
+ * Datenfluss
+ * - Route liefert name
+ * - Service liefert itemList
+ * - entry referenziert den gefundenen Eintrag
+ *
+ * Abhängigkeiten
+ * @dependency ActivatedRoute
+ *   - snapshot.paramMap: liest Namen des Eintrags
+ *
+ * @dependency Service
+ *   - load: lädt gespeicherte Einträge
+ *   - itemList: Datenquelle
+ *   - verifyBiometric: Authentifizierung vor Freigabe
+ *
+ * Nebenwirkungen
+ * - Biometrischer Systemdialog
+ * - Timer für Auto-Hide
+ * - Fortschrittsanzeige für Reveal-Dauer
+ *
+ * Invarianten
+ * - PIN ist standardmäßig maskiert
+ * - Enthüllung nur nach erfolgreicher Biometrie
+ * - Sichtbarkeit endet automatisch nach Timeout
+ * - Es läuft maximal ein Timer-Set gleichzeitig
+ * - Timer werden beim Verlassen der Seite gestoppt
  */
-
 
 @Component({
   selector: 'app-pin-detail',
@@ -33,9 +72,6 @@ export class PinDetailPage implements OnInit {
   ) { }
 
 
-  /**
-   * @description OnInit lifecycle hook to load the pin item based on the route parameter.
-   */
   async ngOnInit() {
     await this.service.load();
     this.nameFromRoute = this.route.snapshot.paramMap.get('name') ?? '';
@@ -45,29 +81,18 @@ export class PinDetailPage implements OnInit {
   }
 
 
-  /**
-   * @description Toggle the reveal state of the pin.
-   */
   toggleReveal() {
     if (!this.entry) return;
     this.isRevealed ? this.hidePin() : this.showPin(3);
   }
 
 
-  /**
-   * @description Mask the pin with asterisks for display.
-   * @param pin string - The pin to be masked.
-   * @returns {string} The masked pin.
-   */
+
   maskPin(pin: string):string{ 
     return '*'.repeat(pin.length) 
   }
 
 
-  /**
-   * @description Show the pin for a specified number of seconds.
-   * @param seconds number - The duration in seconds to show the pin.
-   */
   private async showPin(seconds: number) {
     const verified = await this.service.verifyBiometric('Biometrische Bestätigung zum Teilen der Zugangsdaten');
     if(!verified){alert('Biometrische Authentifizierung fehlgeschlagen'); return}
@@ -91,9 +116,6 @@ export class PinDetailPage implements OnInit {
   }
 
 
-  /**
-   * @description Hide the pin and reset progress.
-   */
   private hidePin(){
     this.isRevealed = false;
     this.progress = 0;
@@ -101,9 +123,6 @@ export class PinDetailPage implements OnInit {
   }
 
 
-  /**
-   * @description Clear any active timers for pin reveal.
-   */
   private clearTimers(){
     if (this.timeoutId) clearTimeout(this.timeoutId);
     if (this.intervalId) clearInterval(this.intervalId);
@@ -112,9 +131,6 @@ export class PinDetailPage implements OnInit {
   }
 
 
-  /**
-   * @description OnDestroy lifecycle hook to clear timers when the component is destroyed.
-   */
   ngOnDestroy(){
     this.clearTimers();
   }

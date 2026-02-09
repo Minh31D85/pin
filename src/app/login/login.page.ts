@@ -1,14 +1,55 @@
 import { Component, OnInit } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { NavController, Platform } from '@ionic/angular';
-import { Service } from '../service';
+import { Service } from '../services/service';
 
 /**
- * This component serves as the login page for the application. It checks for stored credentials and navigates users accordingly. 
- * If no PIN is found, it redirects to the registration page. If server IP or port is missing, it redirects to the IP address configuration page.
- * The component also handles biometric authentication for a seamless login experience.
- * 
- * Note: The component relies on Capacitor's Preferences API for storing and retrieving user credentials and Ionic's navigation for routing between pages.
+ * LoginPage
+ *
+ * Login-View mit PIN-Authentifizierung und optionaler biometrischer
+ * Anmeldung nach erfolgreicher Erstkonfiguration.
+ *
+ * Ziel
+ * - Zugriff auf App nur nach gültiger PIN oder Biometrie
+ * - Sicherstellen, dass PIN und Serververbindung existieren
+ * - Automatische biometrische Anmeldung beim Start
+ *
+ * Verantwortlichkeiten
+ * - Prüft beim Init ob PIN existiert
+ * - Prüft ob Server-IP und Port konfiguriert sind
+ * - Leitet je nach Zustand zu Register oder IP-Setup weiter
+ * - Startet biometrische Anmeldung nach Platform-Ready
+ * - Validiert eingegebene PIN
+ * - Navigiert bei Erfolg zur Home-Seite
+ *
+ * Persistenz
+ * - Preferences Key 'pin' für Login-PIN
+ * - Preferences Key 'server_ip' für Backend-IP
+ * - Preferences Key 'server_port' für Backend-Port
+ *
+ * Abhängigkeiten
+ * @dependency Preferences
+ *   - get: liest PIN und Serverkonfiguration
+ *
+ * @dependency NavController
+ *   - navigateRoot: Navigation zu Register, Setup oder Home
+ *
+ * @dependency Platform
+ *   - ready: stellt sicher, dass Native APIs verfügbar sind
+ *
+ * @dependency Service
+ *   - loginBiometric: biometrische Authentifizierung
+ *
+ * Nebenwirkungen
+ * - Navigiert abhängig vom Setup-Zustand
+ * - Öffnet biometrischen Systemdialog
+ * - Zeigt Alert bei falscher PIN
+ *
+ * Invarianten
+ * - Login nur möglich wenn PIN existiert
+ * - Login nur möglich wenn Server konfiguriert ist
+ * - Biometrie wird nur nach Platform-Ready gestartet
+ * - Navigation zu Home nur nach erfolgreicher Authentifizierung
  */
 
 @Component({
@@ -29,9 +70,6 @@ export class LoginPage implements OnInit {
   ) { }
 
 
-  /**
-   * @description OnInit lifecycle hook to check for stored credentials and navigate accordingly. It also initiates biometric authentication if credentials are present.
-   */
   async ngOnInit() {
     const storedPin = await Preferences.get({ key: 'pin' });
     const storedIp = await Preferences.get({ key: 'server_ip' });
@@ -44,9 +82,6 @@ export class LoginPage implements OnInit {
   }
 
 
-  /**
-   * @description Handle the login process by comparing the entered PIN with the stored PIN. If they match, navigate to the home page; otherwise, show an alert.
-   */
   async login() {
     const storedPin = await Preferences.get({ key: 'pin' });
     if(this.pin === storedPin.value){
@@ -57,9 +92,6 @@ export class LoginPage implements OnInit {
   }
 
 
-  /**
-   * @description Perform biometric authentication and navigate to the home page if successful.
-   */
   async performBiometric(){
     const ok = await this.service.loginBiometric();
     if(!ok) return;

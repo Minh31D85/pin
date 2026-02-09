@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { IpAdressPageRoutingModule } from './ip-adress-routing.module';
+import { IpAdressPageRoutingModule } from './socket-routing.module';
 
-import { IpAdressPage } from './ip-adress.page';
+import { IpAdressPage } from './socket';
 
 @NgModule({
   imports: [

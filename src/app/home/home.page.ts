@@ -1,19 +1,81 @@
 import { Component } from '@angular/core';
-import { PinItem,Service } from '../service';
+import { PinItem,Service } from '../services/service';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { ModalComponent } from '../modal/modal.component';
 import { AlertController } from '@ionic/angular';
-import { ApiService } from '../api-service';
+import { ApiService } from '../services/api-service';
 import { environment } from 'src/environments/environment';
 import { NavController } from '@ionic/angular';
 
 /**
- * This component serves as the home page of the application, allowing users to manage their PIN items.
- * Users can add new PIN items, edit existing ones, delete items, and navigate to detailed views of each item.
- * The component also provides functionality for exporting and importing PIN items as JSON backups, as well as checking the health status of the backup API.
- * 
- * Note: The component relies on a service for data management and uses Ionic components for modals and alerts to enhance user interaction.
+ * HomePage
+ *
+ * Hauptansicht zur Verwaltung von PIN-Einträgen und Backup-Operationen.
+ *
+ * Ziel
+ * - Anlegen, Bearbeiten und Löschen von PIN-Einträgen
+ * - Anzeige der Eintragsliste
+ * - Navigation zur Detailansicht
+ * - Import und Export von Backups über Backend
+ * - Zugriff auf Serverkonfiguration und Healthcheck
+ *
+ * Verantwortlichkeiten
+ * - Lädt Einträge beim Init aus dem Service
+ * - Verwaltet UI-Zustand für neue Eingaben
+ * - Validiert neue Einträge vor dem Speichern
+ * - Verhindert doppelte Namen über Service
+ * - Öffnet Edit-Modal für bestehende Einträge
+ * - Bestätigt Löschaktionen über Alert
+ * - Navigiert zur Detailansicht eines Eintrags
+ * - Exportiert Einträge als Backup über ApiService
+ * - Importiert Backups vom Backend
+ * - Zeigt Liste verfügbarer Backups zur Auswahl
+ * - Navigiert zur Serverkonfiguration
+ * - Führt Backend-Healthcheck aus
+ *
+ * Datenfluss
+ * - service.itemList ist zentrale Datenquelle
+ * - Änderungen werden direkt im Service persistiert
+ * - Modal liefert aktualisierte Einträge zurück
+ * - Backup-API liefert Import und Exportdaten
+ *
+ * Abhängigkeiten
+ * @dependency Service
+ *   - load, add, remove, update, save
+ *   - itemList als zentrale State-Quelle
+ *
+ * @dependency Router
+ *   - Navigation zur Detailseite
+ *
+ * @dependency ModalController
+ *   - Öffnet Edit-Modal
+ *
+ * @dependency AlertController
+ *   - Bestätigungen und Statusmeldungen
+ *
+ * @dependency ApiService
+ *   - export: Backup hochladen
+ *   - import: Backup laden
+ *   - list: Backups auflisten
+ *   - latest: neuestes Backup ermitteln
+ *   - health: Serverstatus prüfen
+ *
+ * @dependency NavController
+ *   - Navigation zur Serverkonfiguration
+ *
+ * Nebenwirkungen
+ * - Persistiert Änderungen im lokalen Storage
+ * - Führt Netzwerkrequests für Backup aus
+ * - Öffnet Modals und Alerts
+ * - Navigiert zwischen Views
+ *
+ * Invarianten
+ * - name ist eindeutig pro Eintrag
+ * - pin ist numerisch mit 4 bis 8 Stellen
+ * - itemList ist Single Source of Truth
+ * - UI spiegelt immer aktuellen Service-State
+ * - Import überschreibt aktuelle Liste vollständig
  */
 
 @Component({
@@ -38,22 +100,16 @@ export class HomePage {
   ) {}
 
   
-  /**
-   * @description navigate to the IP address configuration page
-   */
-  async ngOnInit(){ await this.service.load(); }
+  async ngOnInit(){ 
+    await this.service.load(); 
+  }
 
 
-  /**
-   * @description toggle PIN visibility
-   */
-  togglePVisible(){ this.isPVisible = ! this.isPVisible; }
+  togglePVisible(){ 
+    this.isPVisible = ! this.isPVisible; 
+  }
 
 
-  /**
-   * @description generate a new PIN item
-   * @throws alert if validation fails or unexpected error occurs
-   */
   async generate(){
     const n = this.name.trim();
     const p = this.pin.trim();
@@ -70,23 +126,18 @@ export class HomePage {
       this.name = '';
       this.pin = '';
       this.isPVisible = false;
-    } catch (e: any){
-      if (e.message === 'NAME_EXISTS'){
+    } catch (error){
+      console.error(error);
+      if(error instanceof Error && error.message === 'NAME_EXISTS'){
         alert(`${n} already exists`);
-        this.name = '';
         return;
-      }else{
-        alert ('unexpected error occurred');
       }
+      const msg = error instanceof Error ? error.message : 'unexpected error occurred';
+      alert (msg);
     }
   }
 
   
-  /**
-   * @description delete a PIN item after confirmation
-   * @param index number - index of the item to delete
-   * @throws alert if user cancels the deletion
-   */
   async delete(index: number){
     const alert = await this.alertCtrl.create({
       header: 'Löschen',
@@ -109,11 +160,6 @@ export class HomePage {
   }
 
 
-  /**
-   * @description edit a PIN item using a modal dialog
-   * @param index number - index of the item to edit
-   * @throws alert if validation fails or unexpected error occurs
-   */
   async edit(index: number){
     const item = this.service.itemList[index];
     if (!item) return;
@@ -139,30 +185,24 @@ export class HomePage {
     if(role === 'save' && data?.updated){
       try{
         await this.service.update(data.index, data.updated);
-      }catch (e: any){
-        if (e.message === 'NAME_EXISTS'){
+      }catch (error){
+        console.error(error);
+        if (error instanceof Error && error.message === 'NAME_EXISTS'){
           alert(`${data.updated.name} already exists`);
-        }else{
-          alert('unexpected error occurred');
+          return;
         }
+        const msg = error instanceof Error ? error.message : 'unexpected error occurred';
+        alert(msg);
       }
     }
   }
 
 
-  /**
-   * @description navigate to the detail page of a PIN item
-   * @param item PinItem - the item to navigate to
-   */
   navigateTo(item: PinItem){
     this.router.navigate(['/pin-detail', item.name]);
   }
 
 
-  /**
-   * @description export PIN items to JSON backup
-   * @throws alert if export fails
-   */
   async exportJSON(){
     try{
       const app = environment.backupApi.appName;
@@ -189,15 +229,17 @@ export class HomePage {
         ]
       })
       await alert.present();
-    }catch(e: any){
-      alert(`Export fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }catch(error){
+      console.error(error);
+      if(error instanceof Error){
+        alert(`Export fehlgeschlagen: ${error.message} ?? 'unbekannter Fehler`);
+        return
+      }
+      alert('Export fehlgeschlagen: unbekannter Fehler');
     }
   }
 
 
-  /**
-   * @description import PIN items from the latest JSON backup
-   */
   async importJSON(){
     try{
       const app = environment.backupApi.appName;
@@ -230,15 +272,17 @@ export class HomePage {
         ]
       })
       await alerts.present();
-    }catch(e: any){
-      alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }catch(error){
+      console.error(error);
+      if(error instanceof Error){
+        alert(`Import fehlgeschlagen: ${error.message ?? 'unbekannter Fehler'}`)
+        return
+      }
+      alert('Import fehlgeschlagen: unbekannter Fehler');
     }
   }
 
 
-  /**
-   * @description list available backups and allow user to select one for import
-   */
   async listImport(){
     try{
       const app = environment.backupApi.appName;
@@ -285,24 +329,22 @@ export class HomePage {
         ]
       });
       await alerts.present();
-    }catch(e: any){
-      alert(`Import fehlgeschlagen: ${e?.message ?? 'unbekannter Fehler'}`);
+    }catch(error){
+      console.error(error);
+      if(error instanceof Error){
+        alert(`Import fehlgschlagen: ${error.message}`);
+        return;
+      }
+      alert(`Import fehlgeschlagen: unbekannter Fehler'}`);
     }
   }
 
 
-  /**
-   * @description navigate to the IP address configuration page
-   */
   async ipAdress(){
     this.navCtrl.navigateRoot('/ip-adress')
   }
 
 
-  /**
-   * @description Debugging: check the health status of the backup API
-   * @throws alert if health check fails
-   */
   async health() {
     try {
       const res = await this.backupApi.health();
@@ -312,8 +354,10 @@ export class HomePage {
         buttons: [{ text: 'OK', role: 'cancel' }],
       });
       await alert.present();
-    } catch (e: any) {
-      alert(`Health fehlgeschlagen'}`);
+    } catch (error){
+      console.error(error);
+      const msg = error instanceof Error ? error.message : 'Health fehlgeschlagen';
+      alert(msg);
     }
   }
 }

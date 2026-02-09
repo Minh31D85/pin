@@ -3,12 +3,42 @@ import { NavController } from '@ionic/angular';
 import { Preferences } from '@capacitor/preferences';
 
 /**
- * This page allows the user to set a 4-digit PIN code for authentication. The PIN is stored securely using Capacitor's Preferences API.
- * The user must enter a valid 4-digit numeric PIN, which is then saved and the user is navigated to the IP address configuration page.
- * The page includes basic validation to ensure the PIN is exactly 4 digits and numeric before saving.
- * 
- * Note: In a production application, consider using a more secure storage solution for sensitive data like PINs, such as Capacitor's Secure Storage plugin.
- * The UI should include an input field for the PIN and a button to trigger the registration process. The input should be of type "password" to hide the entered digits.
+ * RegisterPage
+ *
+ * View zur erstmaligen Einrichtung einer lokalen 4-stelligen PIN.
+ *
+ * Ziel
+ * - Benutzer definiert eine numerische PIN
+ * - PIN wird lokal im Storage persistiert
+ * - Nach erfolgreicher Einrichtung Weiterleitung zur Serverkonfiguration
+ *
+ * Verantwortlichkeiten
+ * - Verwaltet UI-Zustand für PIN und Sichtbarkeit
+ * - Validiert Format der PIN
+ * - Persistiert PIN über Capacitor Preferences
+ * - Navigiert nach erfolgreichem Speichern weiter
+ *
+ * Persistenz
+ * - Storage: Capacitor Preferences
+ * - Key: 'pin'
+ * - Format: String mit genau 4 numerischen Zeichen
+ *
+ * Abhängigkeiten
+ * @dependency Preferences
+ *   - set: Persistiert PIN
+ *
+ * @dependency NavController
+ *   - navigateRoot: Weiterleitung zur IP-Konfiguration
+ *
+ * Nebenwirkungen
+ * - Schreibt PIN im Klartext in lokalen Storage
+ * - Zeigt Alerts für Validierung und Erfolg
+ * - Navigiert zu '/ip-adress'
+ *
+ * Invarianten
+ * - PIN besteht aus genau 4 Ziffern
+ * - Navigation erfolgt nur nach erfolgreicher Persistenz
+ * - Kein Überschreiben ohne erneute Registrierung vorgesehen
  */
 
 @Component({

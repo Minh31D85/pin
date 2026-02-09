@@ -1,14 +1,49 @@
 import { Component, Input, ViewChild } from '@angular/core';
 import { ModalController, IonicModule, IonInput } from '@ionic/angular';
-import { PinItem } from '../service';
+import { PinItem } from '../services/service';
 import { FormsModule } from '@angular/forms';
 
 /**
- * This component allows users to edit the name and pin of a pin item. 
- * It provides input fields for both properties and handles validation before saving changes.
- * The modal can be dismissed without saving changes or with the updated data.
- * 
- * Note: The component uses Ionic's modal and input components for a consistent UI experience.
+ * ModalComponent
+ *
+ * Editier-Modal für einen bestehenden PIN-Eintrag.
+ *
+ * Ziel
+ * - Bearbeitung von name und pin innerhalb eines Bottom-Sheet-Modals
+ * - Fokussteuerung zwischen Eingabefeldern
+ * - Validierung vor dem Speichern
+ * - Rückgabe der Änderungen an den aufrufenden Kontext
+ *
+ * Verantwortlichkeiten
+ * - Nimmt index und PinItem als Input
+ * - Schaltet zwischen Edit-Modi für name und pin
+ * - Steuert Fokus und Blur der IonInput-Felder
+ * - Passt Modal-Breakpoints dynamisch an
+ * - Validiert Eingaben vor dem Speichern
+ * - Gibt aktualisierten Eintrag über ModalController zurück
+ *
+ * Datenfluss
+ * - Input item ist die zu bearbeitende Referenz
+ * - Änderungen werden lokal editiert
+ * - save gibt { index, updated } zurück
+ *
+ * Abhängigkeiten
+ * @dependency ModalController
+ *   - dismiss: schließt Modal mit Ergebnis oder cancel
+ *
+ * @dependency IonInput
+ *   - setFocus und blur für UX-Steuerung
+ *
+ * Nebenwirkungen
+ * - Manipuliert Breakpoint des Modals
+ * - Setzt Fokus auf Eingabefelder
+ * - Zeigt Alerts bei Validierungsfehlern
+ *
+ * Invarianten
+ * - Nur ein Feld gleichzeitig im Edit-Modus
+ * - name darf nicht leer sein
+ * - pin ist numerisch und 4 bis 8 Stellen
+ * - Modal gibt nur bei gültigen Daten ein save-Result zurück
  */
 
 @Component({
@@ -31,20 +66,13 @@ export class ModalComponent {
 
   constructor(private modalCtrl: ModalController) { }
   
-  /**
-   * @description Set the bottom sheet breakpoint
-   * @param bp - The breakpoint value (0.5 or 0.9)
-   * @returns {Promise<void>}
-   */
+
   private async setSheet(bp: 0.5 | 0.9){
     const modalEl = document.querySelector('ion-modal.edit-sheet') as any;
     if(modalEl?.setCurrentBreakpoint) await modalEl.setCurrentBreakpoint(bp);
   }
 
-  /**
-   * @description Toggle edit mode for name
-   * @returns {void}
-   */
+
   async toggleEditName(){
     const next = !this.isEditName;
     if(next){ this.isEditPin=false; await this.blurPin();}
@@ -60,10 +88,7 @@ export class ModalComponent {
     }
   }
 
-  /**
-   * @description Toggle edit mode for pin
-   * @returns {void}
-   */
+
   async toggleEditPin(){
     const next = !this.isEditPin;
     if(next){this.isEditName=false; await this.blurName();}
@@ -79,46 +104,34 @@ export class ModalComponent {
     }
   }
 
-  /**
-   * @description remove focus from the name input
-   * @returns {Promise<void>} 
-   */
+
   private async blurName(){
     const el = await this.nameInput?.getInputElement();
     el?.blur();
   }
 
-  /**
-   * @description remove focus from the pin input
-   * @returns {Promise<void>} 
-   */
+
   private async blurPin(){
     const el = await this.pinInput?.getInputElement();
     el?.blur();
   }
 
-  /**
-   * @description Set edit mode for name and pin
-   * @returns {void}
-   */
-  editName(){ this.isEditName = true; }
 
-  /**
-   * @description Set edit mode for pin
-   * @returns {void}
-   */
-  editPin() {this.isEditPin = true; }
+  editName(){ 
+    this.isEditName = true; 
+  }
 
-  /**
-   * @description Dismiss the modal without saving changes
-   * @returns {void}
-   */
-  cancel(){ this.modalCtrl.dismiss(null, 'cancel'); }
 
-  /**
-   * @description Save the changes and dismiss the modal
-   * @returns {void}
-   */
+  editPin(){
+    this.isEditPin = true;
+  }
+
+
+  cancel(){
+    this.modalCtrl.dismiss(null, 'cancel'); 
+  }
+
+
   save(){
     const n = this.item.name.trim();
     const p = this.item.pin.trim();
