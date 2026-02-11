@@ -1,4 +1,4 @@
-package de.minh.starter;
+package de.pin.starter;
 
 import com.getcapacitor.BridgeActivity;
 

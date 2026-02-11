@@ -24,8 +24,8 @@ const routes: Routes = [
     loadChildren: () => import('./login/login.module').then( m => m.LoginPageModule)
   },
   {
-    path: 'ip-adress',
-    loadChildren: () => import('./socket/socket.module').then( m => m.IpAdressPageModule)
+    path: 'socket',
+    loadChildren: () => import('./socket/socket.module').then( m => m.SocketPageModule)
   },
 ];
 

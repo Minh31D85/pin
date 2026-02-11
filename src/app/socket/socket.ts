@@ -57,13 +57,13 @@ import { ApiService } from '../services/api-service';
  */
 
 @Component({
-  selector: 'app-ip-adress',
-  templateUrl: './ip-adress.page.html',
-  styleUrls: ['./ip-adress.page.scss'],
+  selector: 'app-socket',
+  templateUrl: './socket.page.html',
+  styleUrls: ['./socket.page.scss'],
   standalone: false
 })
 
-export class IpAdressPage implements OnInit {
+export class SocketPage implements OnInit {
   ip:string = '';
   port: string = '';
   loading: boolean = false;

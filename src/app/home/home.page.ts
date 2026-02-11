@@ -341,7 +341,7 @@ export class HomePage {
 
 
   async ipAdress(){
-    this.navCtrl.navigateRoot('/ip-adress')
+    this.navCtrl.navigateRoot('/socket')
   }
 
 

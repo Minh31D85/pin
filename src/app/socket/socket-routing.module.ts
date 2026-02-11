@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { IpAdressPage } from './socket';
+import { SocketPage } from './socket';
 
 const routes: Routes = [
   {
     path: '',
-    component: IpAdressPage
+    component: SocketPage
   }
 ];
 
@@ -14,4 +14,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class IpAdressPageRoutingModule {}
+export class SocketPageRoutingModule {}

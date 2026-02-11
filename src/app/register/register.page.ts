@@ -65,6 +65,6 @@ export class RegisterPage implements OnInit {
       value: this.pin,
     });
     alert('PIN saved!');
-    this.navCtrl.navigateRoot('/ip-adress')
+    this.navCtrl.navigateRoot('/socket')
   }
 }

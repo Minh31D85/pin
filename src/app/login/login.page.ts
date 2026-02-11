@@ -76,7 +76,7 @@ export class LoginPage implements OnInit {
     const storedPort = await Preferences.get({ key: 'server_port' });  
 
     if(!storedPin.value){this.navCtrl.navigateRoot('/register'); return}
-    if(!storedIp.value || !storedPort.value){this.navCtrl.navigateRoot('/ip-adress'); return}
+    if(!storedIp.value || !storedPort.value){this.navCtrl.navigateRoot('/socket'); return}
 
     await this.platform.ready().then(() => {this.performBiometric();})
   }

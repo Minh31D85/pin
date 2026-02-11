@@ -15,7 +15,8 @@
             class="ip-input"
             placeholder="IP-Adresse"
             type="string"
-            [(ngModel)]="ip">
+            [(ngModel)]="ip"
+            (keydown.enter)="saveIp()">
           </ion-input>
         </ion-item>
 
@@ -24,7 +25,8 @@
             class="port-input"
             placeholder="Port"
             inputmode="numeric"
-            [(ngModel)]="port">
+            [(ngModel)]="port"
+            (keydown.enter)="saveIp()">
           </ion-input>
         </ion-item>
 

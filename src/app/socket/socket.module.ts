@@ -4,17 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { IpAdressPageRoutingModule } from './socket-routing.module';
+import { SocketPageRoutingModule } from './socket-routing.module';
 
-import { IpAdressPage } from './socket';
+import { SocketPage } from './socket';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    IpAdressPageRoutingModule
+    SocketPageRoutingModule
   ],
-  declarations: [IpAdressPage]
+  declarations: [SocketPage]
 })
-export class IpAdressPageModule {}
+export class SocketPageModule {}

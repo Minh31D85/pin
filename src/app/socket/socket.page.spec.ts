@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { IpAdressPage } from './socket';
+import { SocketPage } from './socket';
 
-describe('IpAdressPage', () => {
-  let component: IpAdressPage;
-  let fixture: ComponentFixture<IpAdressPage>;
+describe('SocketPage', () => {
+  let component: SocketPage;
+  let fixture: ComponentFixture<SocketPage>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IpAdressPage);
+    fixture = TestBed.createComponent(SocketPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

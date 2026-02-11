@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'de.minh.starter',
+  appId: 'de.pin.starter',
   appName: 'pin',
   webDir: 'www',
   server:{
