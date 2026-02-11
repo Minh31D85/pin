@@ -101,9 +101,11 @@ export class ApiService {
   private baseUrl: string = '';
   private port: string = '';
   private ip: string = '';
-  private readonly apiKey = environment.backupApi.apiKey;
+  private apiToken: string = '';
 
-  constructor(private http: HttpClient){}
+  constructor(private http: HttpClient){
+    this.apiToken = environment.backupApi.apiKey;
+  }
 
   
   async init(){
@@ -159,7 +161,7 @@ export class ApiService {
     return new HttpHeaders({
       'Accept': 'application/json',
       'Content-Type': 'application/json',
-      'X-API-KEY': this.apiKey,
+      'Authorization': `Bearer ${this.apiToken}`,
     });
   }
 

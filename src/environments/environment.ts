@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   backupApi:{
-    apiKey: 'CHANGE_ME',
-    appName: 'pin',
+    apiKey: '6>K?56KmfGw8f',
+    appName: 'test',
     schemaVersion: 2,
   }
 };
