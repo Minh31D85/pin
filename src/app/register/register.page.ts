@@ -66,8 +66,5 @@ export class RegisterPage implements OnInit {
     });
     alert('PIN saved!');
     this.navCtrl.navigateRoot('/socket')
-
-
-    
   }
 }
