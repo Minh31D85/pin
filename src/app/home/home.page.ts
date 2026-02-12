@@ -95,7 +95,7 @@ export class HomePage {
     private router: Router,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
-    private backupApi: ApiService,
+    private api: ApiService,
     private navCtrl: NavController,
   ) {}
 
@@ -109,6 +109,11 @@ export class HomePage {
     this.isPVisible = ! this.isPVisible; 
   }
 
+
+  hasConnection(): boolean{
+    const conn = this.api.getConnection();
+    return !!(conn && conn.ip && conn.port)
+  }
 
   async generate(){
     const n = this.name.trim();
@@ -218,7 +223,7 @@ export class HomePage {
           appVersion: '1.0',
         },
       };
-      const res =  await this.backupApi.export(app, body);
+      const res =  await this.api.export(app, body);
       const alert = await this.alertCtrl.create({
         header: 'Gespeichert',
         buttons: [
@@ -243,7 +248,7 @@ export class HomePage {
   async importJSON(){
     try{
       const app = environment.backupApi.appName;
-      const latestRes = await this.backupApi.latest(app);
+      const latestRes = await this.api.latest(app);
       const latestPath = latestRes?.latest?.path ?? '';
 
       if(!latestPath){
@@ -251,7 +256,7 @@ export class HomePage {
         return;
       } 
 
-      const res = await this.backupApi.import<{ items: PinItem[] }>({app, path: latestPath});
+      const res = await this.api.import<{ items: PinItem[] }>({app, path: latestPath});
       const items = (res?.payload as any)?.items;
 
       if(!Array.isArray(items)){
@@ -286,7 +291,7 @@ export class HomePage {
   async listImport(){
     try{
       const app = environment.backupApi.appName;
-      const files = await this.backupApi.list(app);
+      const files = await this.api.list(app);
 
       if(!files.length){
         alert('Kein Backup gefunden') 
@@ -305,7 +310,7 @@ export class HomePage {
           {
             text: 'Importieren',
             handler: async (path: string) => {
-              const res = await this.backupApi.import<{items: PinItem[]}>({app, path});
+              const res = await this.api.import<{items: PinItem[]}>({app, path});
               const items = (res?.payload as any)?.items;
 
               if(!Array.isArray(items)){ 
@@ -347,7 +352,7 @@ export class HomePage {
 
   async health() {
     try {
-      const res = await this.backupApi.health();
+      const res = await this.api.health();
       const alert = await this.alertCtrl.create({
         header: res.status === 'ok' ? 'Health OK' : 'Health FEHLER',
         message: `<pre>${JSON.stringify(res, null, 2)}</pre>`,

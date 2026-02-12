@@ -72,12 +72,7 @@ export class LoginPage implements OnInit {
 
   async ngOnInit() {
     const storedPin = await Preferences.get({ key: 'pin' });
-    const storedIp = await Preferences.get({ key: 'server_ip' });
-    const storedPort = await Preferences.get({ key: 'server_port' });  
-
     if(!storedPin.value){this.navCtrl.navigateRoot('/register'); return}
-    if(!storedIp.value || !storedPort.value){this.navCtrl.navigateRoot('/socket'); return}
-
     await this.platform.ready().then(() => {this.performBiometric();})
   }
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { NavController, AlertController, Platform } from '@ionic/angular';
 import { ApiService } from '../services/api-service';
+
 
 /**
  * IpAdressPage
@@ -66,17 +67,65 @@ import { ApiService } from '../services/api-service';
 export class SocketPage implements OnInit {
   ip:string = '';
   port: string = '';
-  loading: boolean = false;
+  private loading: boolean = false;
+  private alertOpen: boolean = false;
+  private backSub: any;
 
   constructor(
     private api: ApiService,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    private alertCtrl: AlertController,
+    private platform: Platform
   ){}
 
   ngOnInit(): void {
     const conn = this.api.getConnection();
     this.ip = conn.ip || '';
     this.port = conn.port || '';
+    this.registerBack();
+  }
+
+
+  async handleBack(ev: Event){
+    ev.preventDefault();
+    ev.stopPropagation();
+    await this.backButton();
+  }
+
+
+  private registerBack(){
+    this.backSub = this.platform.backButton.subscribeWithPriority(10, async()=>{
+      await this.backButton();
+    }) 
+  }
+
+
+  private async backButton(){
+    if(this.alertOpen) return;
+    const conn = this.api.getConnection();
+    if (!conn.ip || !conn.port){
+      const alert = await this.alertCtrl.create({
+        header: 'Kein Socket gesetzt',
+        message: 'Es ist kein Socket konfiguriert. Ohne Verbindung fortfahren?',
+        buttons: [
+          {
+            text: 'Weiter',
+            role: 'confirm',
+            handler: async () => {
+              await this.navCtrl.navigateRoot('/login');
+              return;
+            }
+          },
+          {
+            text: 'Abbrechen',
+            role: 'cancel'
+          }
+        ]   
+      })
+      await alert.present();
+      return;
+    }
+    return this.navCtrl.navigateRoot('/home');
   }
 
 
@@ -103,5 +152,10 @@ export class SocketPage implements OnInit {
       this.api.health(),
       timeout
     ])
+  }
+
+
+  ngOnDestroy(){
+    if(this.backSub){ this.backSub.unsubscribe(); }
   }
 }

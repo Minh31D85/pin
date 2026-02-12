@@ -1,7 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button default-href="/home"></ion-back-button>
+      <ion-button (click)="handleBack($event)">
+        <ion-icon name="caret-back" slot="start"></ion-icon>
+        Zurück
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
