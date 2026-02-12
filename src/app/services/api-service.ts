@@ -104,7 +104,7 @@ export class ApiService {
   private apiToken: string = '';
 
   constructor(private http: HttpClient){
-    this.apiToken = environment.backupApi.apiKey;
+    this.apiToken = environment.backupApi.token;
   }
 
   
