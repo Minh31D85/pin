@@ -1,32 +1,67 @@
-## Überblick
+# PIN Safe
 
-Dieses Projekt implementiert einen lokalen PIN Safe für eine mobile Android App mit optionaler NAS Anbindung im LAN oder über VPN. Ziel ist ein schneller Offline Zugang per PIN oder Biometrie sowie ein sicherer Token Abruf vom NAS sobald eine Verbindung besteht.
+Self-hosted **secure PIN storage system** for a mobile Android application.
 
-## Funktion
+The system allows fast **offline access via PIN or biometrics**, while optionally retrieving a secure token from a NAS when a network connection is available.
 
-Speichert eine numerische PIN mit vier bis acht Stellen zusammen mit einem Namen.
-PIN wird verschlüsselt im sicheren Gerätespeicher abgelegt.
-Zum Anzeigen ist biometrische Authentifizierung nötig.
-Nach erfolgreicher Biometrie wird die PIN drei Sekunden sichtbar, danach wird sie wieder maskiert.
+---
 
-## Voraussetzungen
+## Badges
 
-Ionic Angular Capacitor.
+![Ionic](https://img.shields.io/badge/Ionic-framework-blue)
+![Angular](https://img.shields.io/badge/Angular-framework-red)
+![Capacitor](https://img.shields.io/badge/Capacitor-mobile--runtime-blue)
+![Android](https://img.shields.io/badge/Android-supported-green)
+![Biometric](https://img.shields.io/badge/Biometric-authentication-orange)
+![HTTP](https://img.shields.io/badge/API-HTTP--Client-lightgrey)
 
-Android Studio.
+---
 
-Biometrie Plugin für Capacito
+## Features
 
-HTTP Client.
+**Secure PIN Storage**
 
-Server mit identischem ApiKey.
+- Stores a numeric PIN with **4–8 digits**
+- PIN is encrypted and stored in the **secure device storage**
 
-## Environment Konfiguration
-Der Token im Client muss identisch mit dem statischen Token auf dem Server sein.
+**Biometric Protection**
 
-```bash
-token: 'CHANGE_ME'
+- Viewing the PIN requires **biometric authentication**
+- After successful authentication the PIN is visible for **3 seconds**
+- Afterwards the PIN is automatically masked again
+
+**Offline First**
+
+- Works fully offline
+- Optional synchronization with a NAS in LAN or VPN
+
+---
+
+## Architectur
+```text
++------------------------------+
+|          Android App         |
+|  Ionic + Angular + Capacitor |
++--------------+---------------+
+               |
+               | HTTP Request
+               v
++------------------------------+
+|            Server            |
+|    Secure Backup Storage     |
++------------------------------+
 ```
-Beispiel Header:
 
-Authorization: Bearer CHANGE_ME
+---
+
+
+## Configuration
+
+The token used in the mobile client must match the **static token configured on the server**.
+
+Example configuration:
+
+```javascript
+token: "CHANGE_ME"
+```
+
