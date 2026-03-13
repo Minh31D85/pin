@@ -2,6 +2,12 @@
 
 Self-hosted **secure PIN storage system** for a mobile Android application.
 
+Built with:
+
+- **Ionic** – Mobile UI framework  
+- **Angular** – Frontend framework  
+- **Capacitor** – Native mobile runtime 
+
 The system allows fast **offline access via PIN or biometrics**, while optionally retrieving a secure token from a NAS when a network connection is available.
 
 ---
