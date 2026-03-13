@@ -77,12 +77,9 @@ token: "CHANGE_ME"
 ---
 
 ## License
-
-Copyright (c) 2026 Minh Nguyen
+This project is not open source.
 
 All rights reserved.
-
-This project is not open source.
 
 The source code is provided for viewing purposes only.
 
