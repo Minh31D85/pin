@@ -8,12 +8,13 @@ The system allows fast **offline access via PIN or biometrics**, while optionall
 
 ## Badges
 
-![Ionic](https://img.shields.io/badge/Ionic-framework-blue)
-![Angular](https://img.shields.io/badge/Angular-framework-red)
-![Capacitor](https://img.shields.io/badge/Capacitor-mobile--runtime-blue)
-![Android](https://img.shields.io/badge/Android-supported-green)
+![Ionic](https://img.shields.io/badge/Ionic-framework-3880FF?logo=ionic&logoColor=white)
+![Angular](https://img.shields.io/badge/Angular-framework-DD0031?logo=angular&logoColor=white)
+![Capacitor](https://img.shields.io/badge/Capacitor-mobile_runtime-119EFF?logo=capacitor&logoColor=white)
+![Android](https://img.shields.io/badge/Android-supported-3DDC84?logo=android&logoColor=white)
 ![Biometric](https://img.shields.io/badge/Biometric-authentication-orange)
-![HTTP](https://img.shields.io/badge/API-HTTP--Client-lightgrey)
+![HTTP](https://img.shields.io/badge/API-HTTP_Client-lightgrey)
+![License](https://img.shields.io/badge/license-all_rights_reserved-red)
 
 ---
 
@@ -37,18 +38,21 @@ The system allows fast **offline access via PIN or biometrics**, while optionall
 
 ---
 
-## Architectur
+## Architecture
 ```text
 +------------------------------+
 |          Android App         |
-|  Ionic + Angular + Capacitor |
+| Ionic + Angular + Capacitor  |
+|                              |
+|  Secure Local Storage        |
+|  PIN + Biometric Access      |
 +--------------+---------------+
                |
-               | HTTP Request
+               | optional HTTP Sync
                v
 +------------------------------+
 |            Server            |
-|    Secure Backup Storage     |
+|        Backup Storage        |
 +------------------------------+
 ```
 
@@ -65,3 +69,21 @@ Example configuration:
 token: "CHANGE_ME"
 ```
 
+---
+
+## License
+
+Copyright (c) 2026 Minh Nguyen
+
+All rights reserved.
+
+This project is not open source.
+
+The source code is provided for viewing purposes only.
+
+You are not permitted to:
+
+- copy the code
+- reuse the code
+- redistribute the code
+- use the code commercially
