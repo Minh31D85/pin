@@ -12,6 +12,13 @@ The system allows fast **offline access via PIN or biometrics**, while optionall
 ![Angular](https://img.shields.io/badge/Angular-framework-DD0031?logo=angular&logoColor=white)
 ![Capacitor](https://img.shields.io/badge/Capacitor-mobile_runtime-119EFF?logo=capacitor&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-supported-3DDC84?logo=android&logoColor=white)
+
+![TypeScript](https://img.shields.io/badge/TypeScript-language-3178C6?logo=typescript&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-language-F7DF1E?logo=javascript&logoColor=black)
+![HTML](https://img.shields.io/badge/HTML-markup-E34F26?logo=html5&logoColor=white)
+![SCSS](https://img.shields.io/badge/SCSS-style-CC6699?logo=sass&logoColor=white)
+![Java](https://img.shields.io/badge/Java-runtime-007396?logo=openjdk&logoColor=white)
+
 ![Biometric](https://img.shields.io/badge/Biometric-authentication-orange)
 ![HTTP](https://img.shields.io/badge/API-HTTP_Client-lightgrey)
 ![License](https://img.shields.io/badge/license-all_rights_reserved-red)
